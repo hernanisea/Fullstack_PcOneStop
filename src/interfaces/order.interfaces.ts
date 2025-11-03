@@ -1,9 +1,16 @@
-import type { CartItem } from "./user.interfaces";
 
-export interface Order {
+export type OrderItem = {
+  productId: string;
+  name: string;
+  price: number;
+  qty: number;
+};
+
+export type Order = {
   id: string;
-  items: CartItem[];
+  items: OrderItem[];
   total: number;
-  createdAt: string;
-  status: "PAID" | "FAILED" | "PENDING";
-}
+  createdAt: string; // ISO
+  customerEmail?: string;
+};
+

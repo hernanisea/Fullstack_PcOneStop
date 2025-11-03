@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import { HomePage } from "../pages/home/HomePage";
+import { HomePage } from "../pages/home";
 import { ProductList } from "../pages/products/ProductList";
 import { ProductDetail } from "../pages/products/ProductDetail";
 import { CartPage } from "../pages/cart/CartPage";
@@ -7,7 +7,10 @@ import { CheckoutPage } from "../pages/orders/CheckoutPage";
 import { CheckoutSuccess } from "../pages/orders/CheckoutSuccess";
 import { CheckoutError } from "../pages/orders/CheckoutError";
 
+import { NotFound } from "../pages/shared/NotFound";
+
 export const AppRoutes = () => (
+  
   <Routes>
     <Route path="/" element={<HomePage />} />
     <Route path="/products" element={<ProductList />} />
@@ -16,6 +19,6 @@ export const AppRoutes = () => (
     <Route path="/checkout" element={<CheckoutPage />} />
     <Route path="/checkout/success" element={<CheckoutSuccess />} />
     <Route path="/checkout/error" element={<CheckoutError />} />
-    <Route path="*" element={<h2 className="text-center mt-5">Página no encontrada</h2>} />
+    <Route path="*" element={<NotFound />} />
   </Routes>
 );

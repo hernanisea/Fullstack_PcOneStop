@@ -1,11 +1,14 @@
+export type Role = "ADMIN" | "CLIENT";
+
 export interface User {
   id: string;
   name: string;
-  role: "CLIENT" | "ADMIN";
   email: string;
+  role: Role;
 }
 
 export interface CartItem {
+  image: string;
   productId: string;
   name: string;
   price: number;

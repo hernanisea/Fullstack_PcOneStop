@@ -3,19 +3,14 @@ import { formatCurrency } from "../../helpers/format-currency.helpers";
 import { Link, useNavigate } from "react-router-dom";
 
 export const CartPage = () => {
-  const { cart, removeFromCart, clearCart } = useApp();
+  const { cart, removeFromCart, updateQty, clearCart, cartTotal } = useApp();
   const navigate = useNavigate();
-
-  const total = cart.reduce((acc, i) => acc + i.price * i.qty, 0);
 
   if (cart.length === 0) {
     return (
       <div className="container py-4">
         <h2>Carrito</h2>
-        <p>
-          Tu carrito está vacío.{" "}
-          <Link to="/products">Ver productos</Link>
-        </p>
+        <p>Tu carrito está vacío. <Link to="/products">Ver productos</Link></p>
       </div>
     );
   }
@@ -24,44 +19,79 @@ export const CartPage = () => {
     <div className="container py-4">
       <h2 className="mb-3">Carrito</h2>
 
-      <ul className="list-group mb-3">
-        {cart.map((item) => (
-          <li
-            key={item.productId}
-            className="list-group-item d-flex justify-content-between align-items-center"
-          >
-            <div>
-              <strong>{item.name}</strong>
-              <div className="small text-muted">x{item.qty}</div>
+      <div className="row g-4">
+        <div className="col-lg-8">
+          <div className="card shadow-sm">
+            <div className="card-body p-0">
+              <table className="table align-middle mb-0">
+                <thead className="table-light">
+                  <tr>
+                    <th>Producto</th>
+                    <th style={{ width: 140 }}>Cantidad</th>
+                    <th style={{ width: 140 }}>Precio</th>
+                    <th style={{ width: 140 }}>Subtotal</th>
+                    <th style={{ width: 90 }}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cart.map(item => (
+                    <tr key={item.productId}>
+                      <td>
+                        <div className="d-flex align-items-center gap-3">
+                          <img src={item.image ?? "/logo.png"} alt={item.name} width={54} height={54} className="rounded border bg-white object-fit-contain" />
+                          <div>
+                            <div className="fw-semibold">{item.name}</div>
+                            <div className="small text-muted">{item.productId}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="d-flex align-items-center gap-2">
+                          <button className="btn btn-sm btn-outline-secondary" onClick={() => updateQty(item.productId, Math.max(1, item.qty - 1))}>−</button>
+                          <input
+                            className="form-control form-control-sm"
+                            style={{ width: 70 }}
+                            type="number"
+                            min={1}
+                            value={item.qty}
+                            onChange={(e) => {
+                              const v = parseInt(e.target.value || "1", 10);
+                              updateQty(item.productId, isNaN(v) ? 1 : Math.max(1, v));
+                            }}
+                          />
+                          <button className="btn btn-sm btn-outline-secondary" onClick={() => updateQty(item.productId, item.qty + 1)}>+</button>
+                        </div>
+                      </td>
+                      <td>{formatCurrency(item.price)}</td>
+                      <td className="fw-semibold">{formatCurrency(item.price * item.qty)}</td>
+                      <td>
+                        <button className="btn btn-link text-danger p-0" onClick={() => removeFromCart(item.productId)}>Quitar</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
+          </div>
 
-            <div className="d-flex align-items-center gap-3">
-              <span>{formatCurrency(item.price * item.qty)}</span>
-              <button
-                className="btn btn-outline-danger btn-sm"
-                onClick={() => removeFromCart(item.productId)}
-              >
-                Quitar
+          <button className="btn btn-outline-secondary mt-3" onClick={clearCart}>Vaciar carrito</button>
+        </div>
+
+        <div className="col-lg-4">
+          <div className="card shadow-sm">
+            <div className="card-body">
+              <h5 className="card-title">Resumen</h5>
+              <div className="d-flex justify-content-between">
+                <span>Subtotal</span>
+                <span className="fw-semibold">{formatCurrency(cartTotal)}</span>
+              </div>
+              <hr />
+              <button className="btn btn-success w-100" onClick={() => navigate("/checkout")}>
+                Ir a pagar
               </button>
+              <Link to="/products" className="btn btn-link w-100 mt-2">Seguir comprando</Link>
             </div>
-          </li>
-        ))}
-      </ul>
-
-      <div className="d-flex justify-content-between align-items-center">
-        <h4>Total: {formatCurrency(total)}</h4>
-
-        <div className="d-flex gap-2">
-          <button className="btn btn-outline-secondary" onClick={clearCart}>
-            Vaciar
-          </button>
-
-          <button
-            className="btn btn-success"
-            onClick={() => navigate("/checkout")}
-          >
-            Ir a pagar
-          </button>
+          </div>
         </div>
       </div>
     </div>

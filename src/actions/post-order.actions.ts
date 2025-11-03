@@ -1,7 +1,15 @@
-import type { CartItem } from "../interfaces/user.interfaces";
+import type { Order } from "../interfaces/order.interfaces";
 
-export async function postOrder(payload: { items: CartItem[]; total: number }) {
-  // Simula un OK
-  console.log("Order posted", payload);
-  return Promise.resolve(true);
+const KEY = "pcos_last_order";
+
+export async function postOrder(order: Order): Promise<Order> {
+  // Simula latencia de red
+  await new Promise(r => setTimeout(r, 500));
+  localStorage.setItem(KEY, JSON.stringify(order));
+  return order;
+}
+
+export function getLastOrder(): Order | null {
+  const raw = localStorage.getItem(KEY);
+  return raw ? JSON.parse(raw) as Order : null;
 }
