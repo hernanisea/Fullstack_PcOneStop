@@ -1,0 +1,1 @@
+export { PcBuilderPage } from "./PcBuilderPage";

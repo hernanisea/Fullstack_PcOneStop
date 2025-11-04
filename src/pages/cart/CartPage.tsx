@@ -77,7 +77,8 @@ export const CartPage = () => {
           <button className="btn btn-outline-secondary mt-3" onClick={clearCart}>Vaciar carrito</button>
         </div>
 
-        <div className="col-lg-4">
+        {/* 👇 LÍNEA MODIFICADA (se añadió .summary-card-sticky) */}
+        <div className="col-lg-4 summary-card-sticky"> 
           <div className="card shadow-sm">
             <div className="card-body">
               <h5 className="card-title">Resumen</h5>

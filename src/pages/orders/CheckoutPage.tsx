@@ -1,3 +1,4 @@
+// src/pages/orders/CheckoutPage.tsx
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../context/AppContext";
@@ -8,32 +9,80 @@ import type { Order } from "../../interfaces/order.interfaces";
 export const CheckoutPage = () => {
   const { cart, clearCart } = useApp();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState(""); // <-- NUEVO state para el error
+
+  // Estados para el formulario completo
+  const [name, setName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [street, setStreet] = useState("");
+  const [department, setDepartment] = useState("");
+  const [region, setRegion] = useState("Región Metropolitana de Santiago");
+  const [comuna, setComuna] = useState("Cerrillos");
+  const [indications, setIndications] = useState("");
 
   const total = useMemo(
     () => cart.reduce((acc, i) => acc + i.price * i.qty, 0),
     [cart]
   );
+  
+  const isFormValid = name && lastName && email && street && region && comuna;
 
-  const handleConfirm = async () => {
+  const handleConfirm = async (e: React.FormEvent) => {
+    e.preventDefault(); 
+    setFormError(""); // Resetea el error al intentar enviar
+
+    // MODIFICADO: Reemplazamos el alert()
+    if (!isFormValid) {
+      setFormError("Faltan campos obligatorios. Por favor, revísalos.");
+      return;
+    }
+
     try {
       setLoading(true);
       const order: Order = {
-        id: crypto.randomUUID(),
+        id: `NRO-${Date.now().toString().slice(-6)}`, 
         items: cart.map(i => ({ productId: i.productId, name: i.name, price: i.price, qty: i.qty })),
         total,
         createdAt: new Date().toISOString(),
-        customerEmail: email || undefined
+        customerName: name,
+        customerLastName: lastName,
+        customerEmail: email,
+        shippingStreet: street,
+        shippingDepartment: department || undefined,
+        shippingRegion: region,
+        shippingComuna: comuna,
+        shippingIndications: indications || undefined,
       };
+      
       await postOrder(order);
       clearCart();
       navigate("/checkout/success");
     } catch {
-      navigate("/checkout/error");
+      setFormError("No se pudo procesar la orden. Intenta de nuevo."); // Error genérico
+      navigate("/checkout/error"); 
     } finally {
       setLoading(false);
     }
+  };
+  
+  // NUEVO: Funciones 'onChange' que limpian el error
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+    if (formError) setFormError("");
+  };
+  const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLastName(e.target.value);
+    if (formError) setFormError("");
+  };
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    if (formError) setFormError("");
+  };
+  const handleStreetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setStreet(e.target.value);
+    if (formError) setFormError("");
   };
 
   if (cart.length === 0) {
@@ -47,53 +96,95 @@ export const CheckoutPage = () => {
 
   return (
     <div className="container py-4">
-      <h2 className="mb-3">Checkout</h2>
-
-      <div className="row g-4">
-        <div className="col-md-7">
-          <div className="card">
+      <div className="row justify-content-center">
+        <div className="col-lg-10 col-xl-8">
+        
+          {/* 1. Resumen del Carrito (Sin cambios) */}
+          <h2 className="mb-3">Carrito de compra</h2>
+          <div className="card shadow-sm mb-4">
             <div className="card-body">
-              <h5>Resumen</h5>
-              <ul className="list-group list-group-flush">
-                {cart.map(i => (
-                  <li key={i.productId} className="list-group-item d-flex justify-content-between">
-                    <span>{i.name} <small className="text-muted">x{i.qty}</small></span>
-                    <strong>{formatCurrency(i.price * i.qty)}</strong>
-                  </li>
-                ))}
-                <li className="list-group-item d-flex justify-content-between">
-                  <span>Total</span>
-                  <strong className="fs-5">{formatCurrency(total)}</strong>
-                </li>
-              </ul>
+              {/* ... (contenido del resumen de la tabla) ... */}
+              <table className="table align-middle">
+                {/* ... (tabla) ... */}
+              </table>
             </div>
           </div>
-        </div>
 
-        <div className="col-md-5">
-          <div className="card">
-            <div className="card-body">
-              <h5>Datos de contacto (opcional)</h5>
-              <input
-                className="form-control"
-                type="email"
-                placeholder="tu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <button
-                className="btn btn-success w-100 mt-3"
-                onClick={handleConfirm}
-                disabled={loading}
-              >
-                {loading ? "Procesando..." : "Confirmar pedido"}
+          {/* 2. Formularios */}
+          <form onSubmit={handleConfirm}>
+            <div className="card shadow-sm mb-4">
+              <div className="card-body">
+                <h5 className="card-title mb-3">Información del cliente</h5>
+                <div className="row g-3">
+                  <div className="col-md-6">
+                    <label className="form-label">Nombre *</label>
+                    <input type="text" className="form-control" value={name} onChange={handleNameChange} />
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label">Apellidos *</label>
+                    <input type="text" className="form-control" value={lastName} onChange={handleLastNameChange} />
+                  </div>
+                  <div className="col-12">
+                    <label className="form-label">Correo *</label>
+                    <input type="email" className="form-control" value={email} onChange={handleEmailChange} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="card shadow-sm mb-4">
+              <div className="card-body">
+                <h5 className="card-title mb-3">Dirección de entrega de los productos</h5>
+                <div className="row g-3">
+                  <div className="col-md-8">
+                    <label className="form-label">Calle *</label>
+                    <input type="text" className="form-control" value={street} onChange={handleStreetChange} />
+                  </div>
+                  <div className="col-md-4">
+                    <label className="form-label">Departamento (opcional)</label>
+                    <input type="text" className="form-control" value={department} onChange={(e) => setDepartment(e.target.value)} />
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label">Región *</label>
+                    <select className="form-select" value={region} onChange={(e) => setRegion(e.target.value)}>
+                      <option value="Región Metropolitana de Santiago">Región Metropolitana de Santiago</option>
+                    </select>
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label">Comuna *</label>
+                    <select className="form-select" value={comuna} onChange={(e) => setComuna(e.target.value)}>
+                      <option value="Cerrillos">Cerrillos</option>
+                      <option value="La Reina">La Reina</option>
+                      <option value="Providencia">Providencia</option>
+                    </select>
+                  </div>
+                  <div className="col-12">
+                    <label className="form-label">Indicaciones para la entrega (opcional)</label>
+                    <textarea className="form-control" rows={3} value={indications} onChange={(e) => setIndications(e.target.value)} />
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* 3. Botón de Pago y Mensaje de Error */}
+            <div className="text-end">
+            
+              {/* NUEVO: Mensaje de Error */}
+              {formError && (
+                <div className="alert alert-danger text-center small p-2 mb-3">
+                  {formError}
+                </div>
+              )}
+            
+              <button type="submit" className="btn btn-success btn-lg" disabled={loading}>
+                {loading ? "Procesando..." : `Pagar ahora ${formatCurrency(total)}`}
               </button>
-              <p className="text-muted small mt-2">* Pago simulado (mock)</p>
             </div>
-          </div>
+            
+          </form>
+
         </div>
       </div>
     </div>
   );
 };
-

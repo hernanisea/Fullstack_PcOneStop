@@ -29,38 +29,13 @@ export const ProductDetail = () => {
   // ---------- Reseñas ----------
   const [reviews, setReviews] = useState<Review[]>([]);
   const [author, setAuthor] = useState("");
-  const [rating, setRating] = useState<1|2|3|4|5>(5);
+  const [rating, setRating] = useState<1 | 2 | 3 | 4 | 5>(5);
   const [comment, setComment] = useState("");
 
   useEffect(() => {
     if (!product) return;
     const fromLS = getReviewsFromLS(product.id) as Review[];
-
-    // Seed inicial si no hay nada
-    if (fromLS.length === 0) {
-      const seed: Review[] = [
-        {
-          id: uid(),
-          productId: product.id,
-          author: "Juan P.",
-          rating: 5,
-          comment: "Excelente rendimiento y silencioso.",
-          date: new Date().toISOString(),
-        },
-        {
-          id: uid(),
-          productId: product.id,
-          author: "Camila R.",
-          rating: 4,
-          comment: "Muy bueno, el envío tardó un poco.",
-          date: new Date(Date.now() - 86400000).toISOString(),
-        },
-      ];
-      seed.forEach(addReviewToLS); // guarda por producto
-      setReviews(getReviewsFromLS(product.id) as Review[]);
-    } else {
-      setReviews(fromLS);
-    }
+    setReviews(fromLS); // <-- MODIFICADO: Solo cargamos lo que hay en LS
   }, [product]);
 
   if (!product) {
@@ -74,14 +49,14 @@ export const ProductDetail = () => {
     );
   }
 
- const handleAdd = () =>
-  addToCart({
-    productId: product.id,
-    name: product.name,
-    price: product.price,
-    qty: 1,
-    image: ""
-  });
+  const handleAdd = () =>
+    addToCart({
+      productId: product.id,
+      name: product.name,
+      price: product.price,
+      qty: 1,
+      image: product.image || "/logo.png" // Añadimos la imagen
+    });
 
   const submitReview = (e: React.FormEvent) => {
     e.preventDefault();

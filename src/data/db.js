@@ -38,5 +38,22 @@ export const db = {
       brand: "Corsair",
       isOnSale: false
     }
+  ],
+
+  users: [
+    {
+      id: "user-admin-01",
+      name: "Hernán",
+      email: "admin@pconestop.com",
+      password: "admin", // En un proyecto real, esto debe estar hasheado
+      role: "ADMIN"
+    },
+    {
+      id: "user-client-01",
+      name: "Pedro",
+      email: "cliente@gmail.com",
+      password: "123",
+      role: "CLIENT"
+    }
   ]
 };

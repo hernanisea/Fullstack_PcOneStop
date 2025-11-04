@@ -602,3 +602,153 @@ body {
     grid-template-columns: repeat(12, 1fr);
   }
 }
+
+/* --- AÑADIDO: Estilos para Loading Screen --- */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--color-bg, #0b0f1a);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  color: var(--color-text, #eaeaea);
+}
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top: 4px solid var(--color-accent, #5865f2);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* --- AÑADIDO: Estilo Sticky para Resumen de Carrito --- */
+@media (min-width: 992px) { /* lg */
+  .summary-card-sticky {
+    position: sticky;
+    top: 100px; /* Ajusta esto según la altura de tu NavBar */
+  }
+}
+
+/* src/styles/Admin.css */
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  /* Usamos los colores de tu theme.css */
+  background-color: var(--color-bg, #0b0f1a); 
+  color: var(--color-text, #eaeaea);
+}
+
+/* --- Barra Lateral (Sidebar) --- */
+.admin-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background-color: #1a2030; /* Un poco más claro que el fondo del card */
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-sidebar .sidebar-header {
+  padding: 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.admin-sidebar .sidebar-header .brand {
+  font-size: 1.25rem;
+  text-decoration: none;
+}
+
+.admin-sidebar .nav-link {
+  color: #a0aec0; /* Texto grisáceo */
+  padding: 0.8rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.admin-sidebar .nav-link i {
+  font-size: 1.1rem;
+  width: 20px;
+  text-align: center;
+}
+
+.admin-sidebar .nav-link:hover {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.admin-sidebar .nav-link.active {
+  color: #fff;
+  font-weight: 500;
+  border-left-color: var(--color-primary, #5865f2);
+  background-color: rgba(88, 101, 242, 0.1);
+}
+
+.admin-sidebar .sidebar-footer {
+  margin-top: auto;
+  padding: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.admin-sidebar .sidebar-footer hr {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* --- Contenido Principal --- */
+.admin-content {
+  flex-grow: 1;
+  padding: 2.5rem;
+  overflow-y: auto; /* Permite scroll si el contenido es largo */
+}
+
+/* Tarjetas de Estadísticas (Colores) */
+.admin-stat-card {
+  border: none;
+  border-radius: var(--radius, 16px);
+  box-shadow: var(--shadow, 0 8px 25px rgba(0, 0, 0, 0.3));
+}
+.admin-stat-card .stat-icon {
+  font-size: 3rem;
+  opacity: 0.3;
+}
+
+/* Tarjetas de Acceso Rápido */
+.admin-link-card {
+  background: var(--color-card, #151b2a);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius, 16px);
+  text-decoration: none;
+  color: var(--color-text, #eaeaea);
+  height: 100%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-link-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow, 0 8px 25px rgba(0, 0, 0, 0.3));
+  border-color: var(--color-primary, #5865f2);
+  color: #fff;
+}
+
+/* Responsive (Oculta la barra lateral en móviles) */
+@media (max-width: 992px) {
+  .admin-sidebar {
+    display: none; /* Simplificado para este ejemplo, se podría hacer un menú hamburguesa */
+  }
+}
+
+.toast-content.error {
+  background: linear-gradient(135deg, #e53e3e, #c53030); 
+}
