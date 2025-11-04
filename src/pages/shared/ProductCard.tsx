@@ -9,13 +9,18 @@ export const ProductCard = ({ product }: Props) => {
   const { addToCart } = useApp();
   const outOfStock = product.stock <= 0;
 
+  // Si el producto está en oferta, calculamos el precio con descuento
+  const discountedPrice = product.isOnSale && product.offer 
+    ? product.price - (product.price * (product.offer.discount / 100))
+    : product.price;
+
   const handleAdd = () =>
     addToCart({
       productId: product.id,
       name: product.name,
-      price: product.price,
+      price: discountedPrice,  // Usamos el precio con descuento si está en oferta
       qty: 1,
-      image: ""
+      image: product.image || "/logo.png"
     });
 
   return (
@@ -27,7 +32,6 @@ export const ProductCard = ({ product }: Props) => {
           loading="lazy"
           className="w-100 h-100"
         />
-
         <span
           className={`product-badge badge ${
             outOfStock ? "bg-secondary" : "bg-success"
@@ -48,7 +52,10 @@ export const ProductCard = ({ product }: Props) => {
         <div className="text-muted small">{product.brand} • {product.category}</div>
 
         <div className="mt-auto d-flex align-items-center justify-content-between">
-          <strong className="price-text">{formatCurrency(product.price)}</strong>
+          {/* Si está en oferta, mostramos el precio con descuento */}
+          <strong className="price-text">
+            {product.isOnSale ? formatCurrency(discountedPrice) : formatCurrency(product.price)}
+          </strong>
 
           <button
             className="btn btn-outline-primary btn-sm product-add-btn"
@@ -56,7 +63,7 @@ export const ProductCard = ({ product }: Props) => {
             disabled={outOfStock}
             aria-disabled={outOfStock}
           >
-            {outOfStock ? "Sin stock" : "Agregar"}
+            {outOfStock ? "Sin stock" : "Agregar al carrito"}
           </button>
         </div>
       </div>

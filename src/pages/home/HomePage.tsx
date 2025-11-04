@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
+import { useApp } from "../../context/AppContext";
 
 export const HomePage = () => {
+  const { products } = useApp(); // Obtienes los productos desde el contexto
+
+  // Filtramos los productos que están en oferta
+  const offerProducts = products.filter(product => product.isOnSale);
+
   return (
     <div className="home-container">
       {/* HERO */}
@@ -24,48 +30,31 @@ export const HomePage = () => {
         </div>
       </section>
 
-      {/* FEATURES */}
-      <section className="features-section container text-center py-5">
+      {/* PRODUCTOS EN OFERTA */}
+      <section className="container py-5 text-center">
+        <h2 className="display-6 fw-bold mb-4">¡Ofertas especiales para ti!</h2>
         <div className="row g-4">
-          <div className="col-md-4">
-            <div className="feature-card">
-              <div className="icon">⚙️</div>
-              <h4 className="fw-semibold">Compatibilidad garantizada</h4>
-              <p className="text-muted small">
-                Selecciona componentes compatibles con nuestro sistema inteligente de validación.
-              </p>
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="feature-card">
-              <div className="icon">💳</div>
-              <h4 className="fw-semibold">Compra segura</h4>
-              <p className="text-muted small">
-                Transacciones protegidas y soporte técnico en cada paso de tu compra.
-              </p>
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="feature-card">
-              <div className="icon">🚚</div>
-              <h4 className="fw-semibold">Envíos express</h4>
-              <p className="text-muted small">
-                Entregas rápidas y rastreables en todo Chile, directamente en tu puerta.
-              </p>
-            </div>
-          </div>
+          {offerProducts.length > 0 ? (
+            offerProducts.map((product) => (
+              <div className="col-md-4" key={product.id}>
+                <div className="product-card">
+                  <img src={product.image || "/logo.png"} alt={product.name} className="w-100" />
+                  <h5 className="mt-2 text-white">{product.name}</h5>
+                  <p className="text-muted">
+                    {product.isOnSale
+                      ? `$${(product.price - (product.price * (product.offer?.discount || 0)) / 100).toFixed(2)}`
+                      : `$${product.price.toFixed(2)}`}
+                  </p>
+                  <Link to={`/products/${product.id}`} className="btn btn-outline-primary btn-sm">
+                    Ver Producto
+                  </Link>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>No hay productos en oferta actualmente.</p>
+          )}
         </div>
-      </section>
-
-      {/* CTA FINAL */}
-      <section className="cta-section text-center py-5">
-        <h2 className="fw-bold mb-3">¿Listo para construir tu nueva PC?</h2>
-        <p className="text-muted mb-4">
-          Empieza ahora y descubre por qué miles de usuarios confían en PC OneStop.
-        </p>
-        <Link to="/products" className="btn btn-accent px-5 py-2">
-          Comenzar ahora
-        </Link>
       </section>
     </div>
   );

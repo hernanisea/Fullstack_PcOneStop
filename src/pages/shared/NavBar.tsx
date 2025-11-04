@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useApp } from "../../context/AppContext";
 
-
 export const NavBar = () => {
   const [open, setOpen] = useState(false);
   const { cart } = useApp();
@@ -13,8 +12,7 @@ export const NavBar = () => {
       <nav className="container d-flex align-items-center justify-content-between py-3">
         {/* Brand */}
         <Link to="/" className="brand d-flex align-items-center gap-2">
-          <span className="brand-dot" />
-          <span className="fw-bold">PC OneStop</span>
+          <span className="fw-bold text-white">PC OneStop</span>
         </Link>
 
         {/* Mobile burger */}
@@ -50,6 +48,17 @@ export const NavBar = () => {
             Productos
           </NavLink>
 
+          {/* New Offer section */}
+          <NavLink
+            to="/offers"
+            className={({ isActive }) =>
+              "nav-link" + (isActive ? " active" : "")
+            }
+            onClick={() => setOpen(false)}
+          >
+            Ofertas
+          </NavLink>
+
           <NavLink
             to="/build"
             className={({ isActive }) =>
@@ -60,27 +69,15 @@ export const NavBar = () => {
             PC Builder
           </NavLink>
 
-          <NavLink
-            to="/reviews"
-            className={({ isActive }) =>
-              "nav-link" + (isActive ? " active" : "")
-            }
-            onClick={() => setOpen(false)}
-          >
-            Reseñas
-          </NavLink>
-
           {/* Cart button */}
           <NavLink
             to="/cart"
             className="btn btn-outline-light position-relative ms-md-3"
             onClick={() => setOpen(false)}
           >
-            Carrito
+            <i className="bi bi-cart3"></i> Carrito
             <span
-              className={`badge rounded-pill ms-2 ${
-                cartCount > 0 ? "badge-pulse" : ""
-              }`}
+              className={`badge rounded-pill ms-2 ${cartCount > 0 ? "badge-pulse" : ""}`}
               style={{
                 background: "var(--color-accent)",
                 color: "#fff",

@@ -1,17 +1,19 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import type { CartItem, User } from "../interfaces/user.interfaces";
 import { getCartFromLS, saveCartToLS } from "../helpers/local-storage.helpers";
+import type { Product } from "../interfaces/product.interfaces"; // Asegúrate de importar Product
 
+// Definimos el estado de la aplicación
 type AppState = {
   user: User | null;
   setUser: (u: User | null) => void;
   cart: CartItem[];
+  products: Product[]; // Agregar products al estado global
   addToCart: (item: CartItem) => void;
   removeFromCart: (productId: string) => void;
   updateQty: (productId: string, qty: number) => void;
   clearCart: () => void;
   cartTotal: number;
-  // toast global (si ya lo tienes)
   toastMessage: string;
   showToast: (msg: string) => void;
   hideToast: () => void;
@@ -23,6 +25,38 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [cart, setCart] = useState<CartItem[]>(getCartFromLS());
   const [toastMessage, setToastMessage] = useState("");
+  
+  // Aquí definimos los productos, incluyendo los que tienen la oferta
+  const [products] = useState<Product[]>([
+    {
+      id: "cpu-ryzen-5600",
+      name: "AMD Ryzen 5 5600",
+      category: "CPU",
+      price: 129990,
+      image: "/logo.png",
+      description: "6C/12T, gran rendimiento precio-rendimiento.",
+      stock: 20,
+      brand: "AMD",
+      isOnSale: true,
+      offer: {
+        discount: 10, // 10% de descuento
+        startDate: "",
+        endDate: "",
+      },
+    },
+    {
+      id: "gpu-rtx-4060",
+      name: "NVIDIA GeForce RTX 4060",
+      category: "GPU",
+      price: 349990,
+      image: "/logo.png",
+      description: "Ada Lovelace, DLSS 3, ideal 1080p/1440p.",
+      stock: 10,
+      brand: "NVIDIA",
+      isOnSale: false, // No está en oferta
+    },
+    
+  ]);
 
   const showToast = (msg: string) => setToastMessage(msg);
   const hideToast = () => setToastMessage("");
@@ -70,6 +104,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       user,
       setUser,
       cart,
+      products, // Pasamos los productos al contexto
       addToCart,
       removeFromCart,
       updateQty,
@@ -79,7 +114,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       showToast,
       hideToast,
     }),
-    [user, cart, cartTotal, toastMessage]
+    [user, cart, products, cartTotal, toastMessage] // Asegúrate de agregar 'products' y otras dependencias
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

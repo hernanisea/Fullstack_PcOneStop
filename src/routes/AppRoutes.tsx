@@ -6,7 +6,7 @@ import { CartPage } from "../pages/cart/CartPage";
 import { CheckoutPage } from "../pages/orders/CheckoutPage";
 import { CheckoutSuccess } from "../pages/orders/CheckoutSuccess";
 import { CheckoutError } from "../pages/orders/CheckoutError";
-
+import { OffersPage } from "../pages/offers/OffersPage";
 import { NotFound } from "../pages/shared/NotFound";
 
 export const AppRoutes = () => (
@@ -19,6 +19,7 @@ export const AppRoutes = () => (
     <Route path="/checkout" element={<CheckoutPage />} />
     <Route path="/checkout/success" element={<CheckoutSuccess />} />
     <Route path="/checkout/error" element={<CheckoutError />} />
+    <Route path="/offers" element={<OffersPage />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
