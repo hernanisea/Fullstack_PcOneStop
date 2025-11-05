@@ -92,7 +92,7 @@ export const NavBar = () => {
               </button>
             </>
           ) : (
-            // --- SI NO ESTÁ LOGUEADO (Invitado) ---
+            
             <NavLink
               to="/login"
               className="btn btn-outline-primary ms-md-3"
@@ -100,10 +100,7 @@ export const NavBar = () => {
             >
               Iniciar Sesión
             </NavLink>
-            // Aquí puedes poner el botón de "Crear Cuenta" del PDF
-            // <NavLink to="/register" className="btn btn-primary" onClick={closeMenu}>
-            //   Crear Cuenta
-            // </NavLink>
+            
           )}
 
         </div>

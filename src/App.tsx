@@ -20,7 +20,6 @@ function AppContent() {
       <Footer />
       {/* MODIFICADO: ToastAlert ahora se renderiza solo */}
       <ToastAlert /> 
-      <CartDrawer />
     </>
   );
 }

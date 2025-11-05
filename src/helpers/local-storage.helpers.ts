@@ -1,4 +1,5 @@
 import type { CartItem } from "../interfaces/user.interfaces";
+import type { Review } from "../interfaces/review.interfaces";
 const KEY = "pcos_cart";
 
 export function getCartFromLS(): CartItem[] {
@@ -13,35 +14,26 @@ export function saveCartToLS(data: CartItem[]) {
 // ---------------- Reseñas en LocalStorage ----------------
 const REVIEWS_KEY = "pcos_reviews";
 
-export function getReviewsFromLS(productId: string) {
+// 2. Actualizar el tipo de retorno
+export function getReviewsFromLS(productId: string): Review[] {
   const raw = localStorage.getItem(REVIEWS_KEY);
-  const all: Record<string, any[]> = raw ? JSON.parse(raw) : {};
-  return (all[productId] ?? []) as Array<{
-    id: string;
-    productId: string;
-    author: string;
-    rating: number;
-    comment: string;
-    date: string;
-  }>;
+  const all: Record<string, Review[]> = raw ? JSON.parse(raw) : {};
+  return (all[productId] ?? []) as Review[];
 }
 
-export function saveReviewsToLS(productId: string, reviews: any[]) {
+// 3. Actualizar el tipo del parámetro
+export function saveReviewsToLS(productId: string, reviews: Review[]) {
   const raw = localStorage.getItem(REVIEWS_KEY);
-  const all: Record<string, any[]> = raw ? JSON.parse(raw) : {};
+  const all: Record<string, Review[]> = raw ? JSON.parse(raw) : {};
   all[productId] = reviews;
   localStorage.setItem(REVIEWS_KEY, JSON.stringify(all));
 }
 
-export function addReviewToLS(review: {
-  id: string;
-  productId: string;
-  author: string;
-  rating: number;
-  comment: string;
-  date: string;
-}) {
+// 4. Actualizar el tipo del parámetro
+export function addReviewToLS(review: Review) {
   const current = getReviewsFromLS(review.productId);
+  // NOTA: Esta función 'addReviewToLS' la dejaremos de usar en el componente
+  // para implementar la lógica de "editar", pero la actualizamos por si la usas en otro lado.
   const next = [review, ...current];
   saveReviewsToLS(review.productId, next);
   return next;

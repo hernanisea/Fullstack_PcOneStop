@@ -11,21 +11,33 @@ import { OffersPage } from "../pages/offers/OffersPage";
 import { NotFound } from "../pages/shared/NotFound";
 import { PcBuilderPage } from "../pages/build";
 import { LoginPage } from "../pages/login"; 
-import { RegisterPage } from "../pages/register"; 
-import { AdminDashboard } from "../pages/admin"; 
-import { ProtectedRoute } from "./ProtectedRoute"; 
+import { RegisterPage } from "../pages/register";
+import { ProtectedRoute } from "./ProtectedRoute";
+import { AboutPage } from "../pages/about";
+
+// --- Importaciones de Admin actualizadas ---
+import { 
+  AdminLayout, 
+  AdminDashboard, 
+  AdminProducts, 
+  AdminUsers,
+  AdminOrders,
+  AdminProductNew,  
+  AdminProductEdit
+} from "../pages/admin";
 
 export const AppRoutes = () => (
   <Routes>
     {/* --- Rutas Públicas --- */}
     <Route path="/" element={<HomePage />} />
     <Route path="/login" element={<LoginPage />} /> 
-    <Route path="/register" element={<RegisterPage />} /> 
+    <Route path="/register" element={<RegisterPage />} />
     <Route path="/products" element={<ProductList />} />
     <Route path="/products/:id" element={<ProductDetail />} />
     <Route path="/cart" element={<CartPage />} />
     <Route path="/offers" element={<OffersPage />} />
     <Route path="/build" element={<PcBuilderPage />} />
+    <Route path="/about" element={<AboutPage />} />
 
     {/* --- Rutas de Checkout (Protegidas por login básico) --- */}
     <Route element={<ProtectedRoute />}>
@@ -34,9 +46,21 @@ export const AppRoutes = () => (
       <Route path="/checkout/error" element={<CheckoutError />} />
     </Route>
     
-    {/* --- Rutas de Administrador (Protegidas por ROL) --- */}
-    <Route element={<ProtectedRoute role="ADMIN" />}>
-      <Route path="/admin/dashboard" element={<AdminDashboard />} />
+   {/* --- RUTAS DE ADMIN (ACTUALIZADAS) --- */}
+    <Route path="/admin" element={<ProtectedRoute role="ADMIN" />}>
+      <Route element={<AdminLayout />}>
+        <Route index element={<AdminDashboard />} /> 
+        <Route path="dashboard" element={<AdminDashboard />} />
+        
+        {/* Rutas de Productos */}
+        <Route path="products" element={<AdminProducts />} />
+        <Route path="products/new" element={<AdminProductNew />} /> 
+        <Route path="products/edit/:id" element={<AdminProductEdit />} /> 
+
+        {/* Otras rutas de admin */}
+        <Route path="users" element={<AdminUsers />} />
+        <Route path="orders" element={<AdminOrders />} />
+      </Route>
     </Route>
 
     {/* --- Página no encontrada --- */}

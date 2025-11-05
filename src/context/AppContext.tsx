@@ -38,7 +38,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true); // Inicia en true
   const [toast, setToast] = useState<ToastState>(null);
 
-  // --- ¡ESTE ES EL BLOQUE QUE FALTABA! ---
+  
   // Carga los productos y desactiva el 'isLoading'
   useEffect(() => {
     const loadData = async () => {

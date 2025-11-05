@@ -30,7 +30,6 @@ export const ProductCard = ({ product }: Props) => {
           src={product.image || "/logo.png"}
           alt={product.name}
           loading="lazy"
-          className="w-100 h-100"
         />
         <span
           className={`product-badge badge ${
@@ -51,21 +50,41 @@ export const ProductCard = ({ product }: Props) => {
 
         <div className="text-muted small">{product.brand} • {product.category}</div>
 
-        <div className="mt-auto d-flex align-items-center justify-content-between">
-          {/* Si está en oferta, mostramos el precio con descuento */}
-          <strong className="price-text">
+        {/* --- SECCIÓN MODIFICADA --- */}
+        {/* Quitamos 'd-flex justify-content-between' para apilar los elementos */}
+        <div className="mt-auto">
+        
+          {/* 1. Precio (ahora es un bloque y tiene margen inferior) */}
+          <strong className="price-text d-block mb-2">
             {product.isOnSale ? formatCurrency(discountedPrice) : formatCurrency(product.price)}
           </strong>
 
-          <button
-            className="btn btn-outline-primary btn-sm product-add-btn"
-            onClick={handleAdd}
-            disabled={outOfStock}
-            aria-disabled={outOfStock}
-          >
-            {outOfStock ? "Sin stock" : "Agregar al carrito"}
-          </button>
+          {/* 2. Wrapper para los dos botones */}
+          <div className="d-flex gap-2">
+            
+            {/* 3. NUEVO Botón de Detalles (Link) */}
+            <Link
+              to={`/products/${product.id}`}
+              className="btn btn-outline-secondary btn-sm flex-grow-1" // Usamos 'flex-grow' para que ocupe el espacio
+            >
+              Detalles
+            </Link>
+
+            {/* 4. Botón de Agregar (modificado) */}
+            <button
+              className="btn btn-outline-primary btn-sm product-add-btn flex-grow-1"
+              onClick={handleAdd}
+              disabled={outOfStock}
+              aria-disabled={outOfStock}
+              // Hacemos el 'z-index' más alto para que el botón sea clickeable
+              style={{ position: 'relative', zIndex: 2 }} 
+            >
+              {outOfStock ? "Sin stock" : "Agregar"} {/* Texto acortado */}
+            </button>
+          </div>
         </div>
+        {/* --- FIN DE SECCIÓN MODIFICADA --- */}
+        
       </div>
     </div>
   );

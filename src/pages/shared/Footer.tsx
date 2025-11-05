@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"; // <-- 1. Asegúrate de importar Link
 
 export const Footer = () => {
   const year = new Date().getFullYear();
@@ -15,9 +15,10 @@ export const Footer = () => {
           </div>
 
           <div className="d-flex gap-3">
-            <a href="#" className="text-muted small text-decoration-none">Política de privacidad</a>
-            <a href="#" className="text-muted small text-decoration-none">Términos</a>
-            <a href="#" className="text-muted small text-decoration-none">Contacto</a>
+            {/* --- 2. ENLACE AÑADIDO AQUÍ --- */}
+            <Link to="/about" className="text-muted small text-decoration-none">
+              Nosotros
+            </Link>
           </div>
         </div>
 
