@@ -39,14 +39,14 @@ export const AppRoutes = () => (
     <Route path="/build" element={<PcBuilderPage />} />
     <Route path="/about" element={<AboutPage />} />
 
-    {/* --- Rutas de Checkout (Protegidas por login básico) --- */}
-    <Route element={<ProtectedRoute />}>
+    
+    
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/checkout/success" element={<CheckoutSuccess />} />
       <Route path="/checkout/error" element={<CheckoutError />} />
-    </Route>
     
-   {/* --- RUTAS DE ADMIN (ACTUALIZADAS) --- */}
+    
+   {/* --- RUTAS DE ADMIN --- */}
     <Route path="/admin" element={<ProtectedRoute role="ADMIN" />}>
       <Route element={<AdminLayout />}>
         <Route index element={<AdminDashboard />} /> 

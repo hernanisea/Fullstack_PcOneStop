@@ -126,11 +126,6 @@ export const LoginPage = () => {
               <Link to="/register" className="small">¿No tienes cuenta? Regístrate</Link>
             </div>
             
-            <hr />
-            <p className="small text-muted text-center mb-0">
-              User: cliente@gmail.com (Pass: 123)<br/>
-              Admin: admin@pconestop.com (Pass: admin)
-            </p>
           </form>
         </div>
       </div>

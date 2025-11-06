@@ -1,5 +1,5 @@
 // src/pages/orders/CheckoutPage.tsx
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react"; // 1. Importamos useEffect
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../context/AppContext";
 import { formatCurrency } from "../../helpers/format-currency.helpers";
@@ -7,10 +7,10 @@ import { postOrder } from "../../actions/post-order.actions";
 import type { Order } from "../../interfaces/order.interfaces";
 
 export const CheckoutPage = () => {
-  const { cart, clearCart } = useApp();
+  const { cart, clearCart, user } = useApp(); // 2. Obtenemos 'user' del contexto
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [formError, setFormError] = useState(""); // <-- NUEVO state para el error
+  const [formError, setFormError] = useState("");
 
   // Estados para el formulario completo
   const [name, setName] = useState("");
@@ -22,6 +22,20 @@ export const CheckoutPage = () => {
   const [comuna, setComuna] = useState("Cerrillos");
   const [indications, setIndications] = useState("");
 
+  // --- 3. NUEVO: Lógica para rellenar el formulario si el usuario existe ---
+  useEffect(() => {
+    if (user) {
+      // Asumimos que user.name es "Nombre Apellido"
+      const nameParts = user.name.split(' ');
+      const firstName = nameParts[0] || "";
+      const restOfName = nameParts.slice(1).join(' ');
+
+      setName(firstName);
+      setLastName(restOfName);
+      setEmail(user.email);
+    }
+  }, [user]); // Se ejecuta cada vez que el 'user' (del login) cambie
+
   const total = useMemo(
     () => cart.reduce((acc, i) => acc + i.price * i.qty, 0),
     [cart]
@@ -31,9 +45,8 @@ export const CheckoutPage = () => {
 
   const handleConfirm = async (e: React.FormEvent) => {
     e.preventDefault(); 
-    setFormError(""); // Resetea el error al intentar enviar
+    setFormError(""); 
 
-    // MODIFICADO: Reemplazamos el alert()
     if (!isFormValid) {
       setFormError("Faltan campos obligatorios. Por favor, revísalos.");
       return;
@@ -60,14 +73,14 @@ export const CheckoutPage = () => {
       clearCart();
       navigate("/checkout/success");
     } catch {
-      setFormError("No se pudo procesar la orden. Intenta de nuevo."); // Error genérico
+      setFormError("No se pudo procesar la orden. Intenta de nuevo.");
       navigate("/checkout/error"); 
     } finally {
       setLoading(false);
     }
   };
   
-  // NUEVO: Funciones 'onChange' que limpian el error
+  // (Las funciones 'onChange' que limpian el error siguen igual)
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
     if (formError) setFormError("");
@@ -99,18 +112,14 @@ export const CheckoutPage = () => {
       <div className="row justify-content-center">
         <div className="col-lg-10 col-xl-8">
         
-          {/* 1. Resumen del Carrito (Sin cambios) */}
           <h2 className="mb-3">Carrito de compra</h2>
           <div className="card shadow-sm mb-4">
             <div className="card-body">
-              {/* ... (contenido del resumen de la tabla) ... */}
-              <table className="table align-middle">
-                {/* ... (tabla) ... */}
-              </table>
+              {/* ... (Resumen de la tabla) ... */}
             </div>
           </div>
 
-          {/* 2. Formularios */}
+          {/* El formulario se rellenará automáticamente gracias al useEffect */}
           <form onSubmit={handleConfirm}>
             <div className="card shadow-sm mb-4">
               <div className="card-body">
@@ -166,16 +175,13 @@ export const CheckoutPage = () => {
               </div>
             </div>
             
-            {/* 3. Botón de Pago y Mensaje de Error */}
             <div className="text-end">
-            
-              {/* NUEVO: Mensaje de Error */}
               {formError && (
                 <div className="alert alert-danger text-center small p-2 mb-3">
                   {formError}
                 </div>
               )}
-            
+              
               <button type="submit" className="btn btn-success btn-lg" disabled={loading}>
                 {loading ? "Procesando..." : `Pagar ahora ${formatCurrency(total)}`}
               </button>
