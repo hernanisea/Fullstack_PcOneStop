@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useApp } from "../../context/AppContext";
-import { ProductCard } from "../shared/ProductCard"; // Importamos tu ProductCard
+import { ProductCard } from "../shared/ProductCard"; 
 
 export const HomePage = () => {
   const { products } = useApp(); // Obtienes los productos desde el contexto
@@ -9,8 +9,9 @@ export const HomePage = () => {
   const offerProducts = products.filter(product => product.isOnSale);
 
   return (
+    
     <div className="home-container">
-      {/* HERO (Sin cambios) */}
+
       <section className="hero-banner text-center text-light">
         <div className="hero-overlay" />
         <div className="container position-relative z-2 py-5">
@@ -31,7 +32,7 @@ export const HomePage = () => {
         </div>
       </section>
 
-      {/* --- SECCIÓN DE OFERTAS MODIFICADA --- */}
+      
       <section className="container py-5">
         <h2 className="display-6 fw-bold mb-4 text-center">¡Ofertas especiales para ti!</h2>
         {offerProducts.length > 0 ? (
