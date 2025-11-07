@@ -5,19 +5,17 @@ import { useApp } from "../../context/AppContext";
 
 export const NavBar = () => {
   const [open, setOpen] = useState(false);
-  const { cart, user, setUser, setIsLoading } = useApp(); // <-- OBTENEMOS USER y SETUSER
+  const { cart, user, setUser, setIsLoading } = useApp();
   const cartCount = cart.reduce((acc, i) => acc + i.qty, 0);
   const navigate = useNavigate();
 
   const handleLogout = () => {
     setIsLoading(true);
-    setUser(null); // Borra el usuario del contexto
-    // Aquí también deberías limpiar cualquier token de localStorage si lo usaras
+    setUser(null);
     setOpen(false);
-    // Añadimos una pequeña demora para que se vea el loader
     setTimeout(() => {
       setIsLoading(false);
-      navigate("/"); // Redirige al inicio
+      navigate("/");
     }, 500);
   };
 
@@ -25,22 +23,27 @@ export const NavBar = () => {
 
   return (
     <header className="navbar-glass">
+      {/* El 'justify-content-between' ahora separará 
+        el 'div.left-side' (hamburguesa + brand) del 'div.menu' (links) 
+      */}
       <nav className="container d-flex align-items-center justify-content-between py-3">
-        {/* Brand */}
-        <Link to="/" className="brand d-flex align-items-center gap-2">
-          <span className="fw-bold text-white">PC OneStop</span>
-        </Link>
+        <div className="d-flex align-items-center gap-3">
+          <button
+            className="burger"
+            aria-label="Abrir menú"
+            onClick={() => setOpen(v => !v)}
+          >
+            <span /> <span /> <span />
+          </button>
 
-        {/* Mobile burger */}
-        <button
-          className="burger"
-          aria-label="Abrir menú"
-          onClick={() => setOpen(v => !v)}
-        >
-          <span /> <span /> <span />
-        </button>
+          <Link to="/" className="brand d-flex align-items-center gap-4">
+            <img src="/logo.png" alt="PC OneStop Logo" className="navbar-logo" />
+          </Link>
+        </div>
+        
+        {/* --- FIN DE SECCIÓN MODIFICADA --- */}
 
-        {/* Links */}
+        {/* Links (Lado Derecho - sin cambios) */}
         <div className={`menu ${open ? "open" : ""}`}>
           <NavLink to="/" className="nav-link" onClick={closeMenu}>
             Inicio
@@ -74,11 +77,9 @@ export const NavBar = () => {
             </span>
           </NavLink>
 
-          {/* --- LÓGICA DE LOGIN --- */}
+          {/* Lógica de Login (sin cambios) */}
           {user ? (
-            // --- SI ESTÁ LOGUEADO ---
             <>
-              {/* Si es Admin, muestra el enlace al Dashboard */}
               {user.role === "ADMIN" && (
                 <NavLink to="/admin/dashboard" className="nav-link" onClick={closeMenu}>
                   <i className="bi bi-shield-lock-fill"></i> Admin
@@ -92,7 +93,6 @@ export const NavBar = () => {
               </button>
             </>
           ) : (
-            
             <NavLink
               to="/login"
               className="btn btn-outline-primary ms-md-3"
@@ -100,7 +100,6 @@ export const NavBar = () => {
             >
               Iniciar Sesión
             </NavLink>
-            
           )}
 
         </div>

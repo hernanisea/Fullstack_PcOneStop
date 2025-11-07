@@ -150,8 +150,8 @@ body {
 }
 .burger {
   display: none;
-  width: 36px;
-  height: 28px;
+  width: 30px;
+  height: 23px;
   background: transparent;
   border: 0;
   padding: 0;
@@ -350,7 +350,7 @@ body {
 .toast-alert {
   opacity: 0;
   pointer-events: none;
-  transform: translateY(20px);
+  transform: translateY(-20px);
   transition: opacity .3s ease, transform .3s ease;
   z-index: 2000;
 }
@@ -527,4 +527,25 @@ body {
 .admin-table tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.04);
   color: var(--color-text, #eaeaea);
+}
+
+.navbar-logo {
+  height: 75px; /* Tamaño del logo en pantallas grandes */
+  width: auto; /* Mantiene la proporción */
+  vertical-align: middle; /* Alinea con el texto */
+  margin-left: 5px; /* Pequeño espacio a la izquierda del logo */
+  transition: transform 0.2s ease;
+}
+
+/* Efecto al pasar el mouse sobre el link de la marca */
+.brand:hover .navbar-logo {
+  transform: scale(1.05); /* Ligeramente más grande al pasar el mouse */
+}
+
+/* Media Query para pantallas pequeñas (móviles) */
+@media (max-width: 768px) {
+  .navbar-logo {
+    height: 75px; /* Un poco más pequeño en móviles */
+    margin-left: 3px;
+  }
 }

@@ -15,7 +15,7 @@ export const HomePage = () => {
         <div className="hero-overlay" />
         <div className="container position-relative z-2 py-5">
           <h1 className="display-4 fw-bold mb-3">
-            Potencia tus ideas con <span className="text-accent">PC OneStop</span>
+            Potencia tu Equipo con <span className="text-accent">PC OneStop</span>
           </h1>
           <p className="lead mb-4 text-muted">
             Arma tu PC ideal, explora el catálogo más completo y disfruta del rendimiento que mereces.

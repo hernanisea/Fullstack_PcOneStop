@@ -35,7 +35,7 @@ export const ToastAlert = () => {
   const typeClass = isError ? 'error' : 'success';
 
   return (
-    <div ref={ref} className="toast-alert position-fixed bottom-0 end-0 m-4">
+    <div ref={ref} className="toast-alert position-fixed top-0 end-0 m-4">
       {/* Añadimos la clase 'error' o 'success' */}
       <div className={`toast-content ${typeClass}`}>
         <span>{icon} {toast.message}</span>
