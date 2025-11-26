@@ -1,0 +1,134 @@
+// src/pages/login/LoginPage.tsx
+import { useState } from "react";
+import { useApp } from "../../context/AppContext";
+import { useNavigate, Link } from "react-router-dom";
+import { login } from "../../actions/auth.actions";
+
+type ValidationErrors = {
+  email?: string;
+  password?: string;
+};
+
+export const LoginPage = () => {
+  // --- 1. Obtenemos showToast ---
+  const { setUser, setIsLoading, showToast } = useApp();
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  // const [serverError, setServerError] = useState(""); // <-- YA NO SE USA
+  const [loading, setLoading] = useState(false);
+
+  // Funciones onChange que limpian los errores de validación
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (validationErrors.email) setValidationErrors({});
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (validationErrors.password) setValidationErrors({});
+    setPassword(e.target.value);
+  };
+
+  const validateForm = (): boolean => {
+    const errors: ValidationErrors = {};
+    if (!email.trim()) {
+      errors.email = "El email es obligatorio.";
+    }
+    if (!password) {
+      errors.password = "La contraseña es obligatoria.";
+    }
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+    setIsLoading(true); // Loader global
+
+    try {
+      const result = await login(email, password);
+
+      if (result.user) {
+        setUser(result.user);
+        // Opcional: Damos la bienvenida
+        showToast(`Bienvenido, ${result.user.name}!`, 'success'); 
+        if (result.user.role === "ADMIN") {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/");
+        }
+      } else if (result.error) {
+        // --- 2. AQUÍ ESTÁ LA SOLUCIÓN ---
+        // Usamos el Toast global de error
+        showToast(result.error, 'error'); 
+      }
+      
+    } catch (err) {
+      console.error(err);
+      showToast("Ocurrió un error inesperado.", 'error'); // Error genérico
+    } finally {
+      setLoading(false);
+      setIsLoading(false); // Apaga el loader global
+    }
+  };
+
+  return (
+    <div className="container py-5" style={{ maxWidth: "450px" }}>
+      <div className="card shadow-sm">
+        <div className="card-body p-4 p-md-5">
+          <h2 className="text-center mb-4">Iniciar Sesión</h2>
+          <form onSubmit={handleSubmit} noValidate>
+            
+            {/* --- 3. ELIMINAMOS EL ALERT ROJO DE AQUÍ --- */}
+            
+            <div className="mb-3">
+              <label className="form-label">Email</label>
+              <input
+                type="email"
+                className={`form-control ${validationErrors.email ? 'is-invalid' : ''}`}
+                value={email}
+                onChange={handleEmailChange}
+                disabled={loading}
+              />
+              {validationErrors.email && (
+                <div className="invalid-feedback">{validationErrors.email}</div>
+              )}
+            </div>
+            
+            <div className="mb-3">
+              <label className="form-label">Contraseña</label>
+              <input
+                type="password"
+                className={`form-control ${validationErrors.password ? 'is-invalid' : ''}`}
+                value={password}
+                onChange={handlePasswordChange}
+                disabled={loading}
+              />
+              {validationErrors.password && (
+                <div className="invalid-feedback">{validationErrors.password}</div>
+              )}
+            </div>
+            
+            <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+              {loading ? "Ingresando..." : "Ingresar"}
+            </button>
+            
+            <div className="text-center mt-3">
+              <Link to="/register" className="small">¿No tienes cuenta? Regístrate</Link>
+            </div>
+            
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
