@@ -1,23 +1,23 @@
-import { apiClient } from "../services/api.client";
-import { API_CONFIG } from "../config/api.config";
 import type { Order } from "../interfaces/order.interfaces";
 
 const KEY = "pcos_last_order";
 
 export async function postOrder(order: Order): Promise<Order> {
   try {
-    const response = await apiClient.post<Order>(
-      `${API_CONFIG.ORDERS.baseURL}${API_CONFIG.ORDERS.endpoints.create}`,
-      order
-    );
+    const response = await fetch('http://localhost:8083/api/v1/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(order)
+    });
 
-    if (response.data) {
-      // Guardamos también en localStorage como respaldo
-      localStorage.setItem(KEY, JSON.stringify(response.data));
-      return response.data;
+    const data = await response.json();
+
+    if (data.success && data.data) {
+      localStorage.setItem(KEY, JSON.stringify(data.data));
+      return data.data;
     }
 
-    throw new Error(response.message || "Error al crear el pedido");
+    throw new Error(data.message || "Error al crear el pedido");
   } catch (error) {
     console.error("Error al crear pedido:", error);
     throw error;

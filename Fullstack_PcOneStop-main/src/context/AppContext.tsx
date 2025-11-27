@@ -4,11 +4,14 @@ import { getCartFromLS, saveCartToLS } from "../helpers/local-storage.helpers";
 import type { Product } from "../interfaces/product.interfaces";
 import { getProducts } from "../actions/get-product.actions";
 
+// --- Tipos para el Toast ---
 type ToastType = 'success' | 'error';
 type ToastState = {
   message: string;
   type: ToastType;
 } | null;
+
+// --- AppState ---
 type AppState = {
   user: User | null;
   setUser: (u: User | null) => void;
@@ -32,19 +35,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [cart, setCart] = useState<CartItem[]>(getCartFromLS());
   const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true); // Inicia en true
   const [toast, setToast] = useState<ToastState>(null);
 
+  
+  // Carga los productos y desactiva el 'isLoading'
   useEffect(() => {
     const loadData = async () => {
-      setIsLoading(true);
+      setIsLoading(true); // Asegura que esté en true
       const productsFromDb = await getProducts();
       setProducts(productsFromDb);
+      // Simula un tiempo de carga mínimo
       await new Promise(r => setTimeout(r, 500));
-      setIsLoading(false);
+      setIsLoading(false); // <-- ¡La línea clave! Termina la carga
     };
     loadData();
-  }, []);
+  }, []); // Array vacío, se ejecuta solo una vez
+
+  // --- Funciones del Toast (ya estaban correctas) ---
   const showToast = (msg: string, type: ToastType = 'success') => {
     setToast({ message: msg, type: type });
   };
@@ -55,6 +63,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return next;
   };
 
+  // --- Funciones del Carrito (actualizadas) ---
   const addToCart = (item: CartItem) => {
     setCart(prev => {
       const exists = prev.find(p => p.productId === item.productId);
@@ -88,6 +97,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [cart]
   );
 
+  // --- 'value' del Provider (ya estaba correcto) ---
   const value = useMemo(
     () => ({
       user,

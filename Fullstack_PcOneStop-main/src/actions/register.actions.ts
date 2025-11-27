@@ -1,6 +1,3 @@
-// src/actions/register.actions.ts
-import { apiClient } from "../services/api.client";
-import { API_CONFIG } from "../config/api.config";
 import type { User } from "../interfaces/user.interfaces";
 
 type RegisterResult = {
@@ -10,35 +7,20 @@ type RegisterResult = {
 
 export const register = async (name: string, email: string, password: string): Promise<RegisterResult> => {
   try {
-    // El backend espera un objeto User completo
-    const userData = {
-      name,
-      email,
-      password,
-      role: "CLIENT" as const
-    };
+    const response = await fetch('http://localhost:8081/api/v1/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password, role: 'CLIENT' })
+    });
 
-    const response = await apiClient.post<User>(
-      `${API_CONFIG.USERS.baseURL}${API_CONFIG.USERS.endpoints.register}`,
-      userData
-    );
+    const data = await response.json();
 
-    if (response.data) {
-      // El backend devuelve el usuario sin contraseña
-      return {
-        user: response.data,
-        error: null
-      };
+    if (data.success && data.data) {
+      return { user: data.data, error: null };
     }
 
-    return {
-      user: null,
-      error: response.message || "Error al registrar usuario"
-    };
+    return { user: null, error: data.message || "Error al registrar usuario" };
   } catch (error) {
-    return {
-      user: null,
-      error: error instanceof Error ? error.message : "Error desconocido al registrar usuario"
-    };
+    return { user: null, error: error instanceof Error ? error.message : "Error desconocido" };
   }
 };

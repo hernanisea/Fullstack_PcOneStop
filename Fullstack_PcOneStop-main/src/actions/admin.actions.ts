@@ -1,106 +1,105 @@
-import { apiClient } from "../services/api.client";
-import { API_CONFIG } from "../config/api.config";
 import type { Order } from "../interfaces/order.interfaces";
 import type { Product } from "../interfaces/product.interfaces";
 import type { User } from "../interfaces/user.interfaces";
 
-// Obtener todos los productos (admin)
 export const getAdminProducts = async (): Promise<Product[]> => {
   try {
-    const response = await apiClient.get<Product[]>(
-      `${API_CONFIG.PRODUCTS.baseURL}${API_CONFIG.PRODUCTS.endpoints.list}`
-    );
-    return response.data || [];
+    const response = await fetch('http://localhost:8082/api/v1/products');
+    const data = await response.json();
+    return data.data || [];
   } catch (error) {
     console.error("Error al obtener productos:", error);
     return [];
   }
 };
 
-// Obtener todas las órdenes (admin)
 export const getAdminOrders = async (): Promise<Order[]> => {
   try {
-    const response = await apiClient.get<Order[]>(
-      `${API_CONFIG.ORDERS.baseURL}${API_CONFIG.ORDERS.endpoints.list}`
-    );
-    return response.data || [];
+    const response = await fetch('http://localhost:8083/api/v1/orders');
+    const data = await response.json();
+    return data.data || [];
   } catch (error) {
     console.error("Error al obtener órdenes:", error);
     return [];
   }
 };
 
-// Obtener todos los usuarios (admin)
 export const getAdminUsers = async (): Promise<Omit<User, 'password'>[]> => {
   try {
-    const response = await apiClient.get<User[]>(
-      `${API_CONFIG.USERS.baseURL}${API_CONFIG.USERS.endpoints.users}`
-    );
-    // El backend ya devuelve usuarios sin contraseña, pero por seguridad lo filtramos
-    return (response.data || []).map(({ password, ...user }) => user);
+    const response = await fetch('http://localhost:8081/api/v1/auth');
+    const data = await response.json();
+    return (data.data || []).map(({ password, ...user }: User) => user);
   } catch (error) {
     console.error("Error al obtener usuarios:", error);
     return [];
   }
 };
 
-// Obtener producto por ID (admin)
 export const getAdminProductById = async (id: string): Promise<Product | null> => {
   try {
-    const response = await apiClient.get<Product>(
-      `${API_CONFIG.PRODUCTS.baseURL}${API_CONFIG.PRODUCTS.endpoints.byId(id)}`
-    );
-    return response.data || null;
+    const response = await fetch(`http://localhost:8082/api/v1/products/${id}`);
+    const data = await response.json();
+    return data.data || null;
   } catch (error) {
     console.error("Error al obtener producto:", error);
     return null;
   }
 };
 
-// Crear nuevo producto (admin)
 export const createAdminProduct = async (productData: Omit<Product, 'id'>): Promise<Product> => {
   try {
-    const response = await apiClient.post<Product>(
-      `${API_CONFIG.PRODUCTS.baseURL}${API_CONFIG.PRODUCTS.endpoints.create}`,
-      productData
-    );
+    const response = await fetch('http://localhost:8082/api/v1/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productData)
+    });
 
-    if (!response.data) {
-      throw new Error(response.message || "Error al crear el producto");
+    const data = await response.json();
+
+    if (!data.success || !data.data) {
+      throw new Error(data.message || "Error al crear el producto");
     }
 
-    return response.data;
+    return data.data;
   } catch (error) {
     console.error("Error al crear producto:", error);
     throw error;
   }
 };
 
-// Actualizar producto existente (admin)
 export const updateAdminProduct = async (productId: string, productData: Product): Promise<Product> => {
   try {
-    const response = await apiClient.put<Product>(
-      `${API_CONFIG.PRODUCTS.baseURL}${API_CONFIG.PRODUCTS.endpoints.update(productId)}`,
-      productData
-    );
+    const response = await fetch(`http://localhost:8082/api/v1/products/${productId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productData)
+    });
 
-    if (!response.data) {
-      throw new Error(response.message || "Error al actualizar el producto");
+    const data = await response.json();
+
+    if (!data.success || !data.data) {
+      throw new Error(data.message || "Error al actualizar el producto");
     }
 
-    return response.data;
+    return data.data;
   } catch (error) {
     console.error("Error al actualizar producto:", error);
     throw error;
   }
 };
 
-// Eliminar producto (admin)
 export const deleteAdminProduct = async (productId: string): Promise<{ success: boolean }> => {
   try {
-    await apiClient.delete<void>(
-      `${API_CONFIG.PRODUCTS.baseURL}${API_CONFIG.PRODUCTS.endpoints.delete(productId)}`
-    );
+    const response = await fetch(`http://localhost:8082/api/v1/products/${productId}`, {
+      method: 'DELETE'
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(data.message || "Error al eliminar el producto");
+    }
+
     return { success: true };
   } catch (error) {
     console.error("Error al eliminar producto:", error);

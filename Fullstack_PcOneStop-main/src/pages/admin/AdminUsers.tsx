@@ -5,14 +5,16 @@ import { getAdminUsers } from "../../actions/admin.actions";
 export const AdminUsers = () => {
   const [users, setUsers] = useState<Omit<User, 'password'>[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null); // <-- Estado de error
 
   useEffect(() => {
     getAdminUsers()
       .then(setUsers)
+      // --- ESTE ES EL ARREGLO ---
+      // Añadimos un .catch() para manejar cualquier error
       .catch((err) => {
         console.error("Error al cargar usuarios:", err);
-        setError("No se pudieron cargar los usuarios. Verifica que el microservicio de Usuarios esté ejecutándose.");
+        setError("No se pudieron cargar los usuarios. Revisa que 'db.js' tenga el array 'users'.");
       })
       .finally(() => {
         setLoading(false);
@@ -27,9 +29,10 @@ export const AdminUsers = () => {
         <div className="card-body">
           {loading ? (
             <p>Cargando usuarios...</p>
-          ) : error ? (
+          ) : error ? ( // <-- Si hay un error, lo mostramos
             <div className="alert alert-danger">{error}</div>
           ) : (
+            // Si no hay carga ni error, mostramos la tabla
             <div className="table-responsive">
               <table className="table admin-table align-middle">
                 <thead>

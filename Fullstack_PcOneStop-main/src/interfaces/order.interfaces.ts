@@ -18,6 +18,8 @@ export type OrderItem = {
   qty: number;
 };
 
+// --- MODIFICADO ---
+// Añadimos todos los campos del formulario de checkout
 export type Order = {
   id: string;
   items: OrderItem[];

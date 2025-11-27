@@ -1,14 +1,10 @@
-import { apiClient } from "../services/api.client";
-import { API_CONFIG } from "../config/api.config";
 import type { Product } from "../interfaces/product.interfaces";
 
 export async function getProductById(id: string): Promise<Product | null> {
   try {
-    const response = await apiClient.get<Product>(
-      `${API_CONFIG.PRODUCTS.baseURL}${API_CONFIG.PRODUCTS.endpoints.byId(id)}`
-    );
-
-    return response.data || null;
+    const response = await fetch(`http://localhost:8082/api/v1/products/${id}`);
+    const data = await response.json();
+    return data.data || null;
   } catch (error) {
     console.error("Error al obtener producto:", error);
     return null;

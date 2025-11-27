@@ -15,6 +15,7 @@ import { RegisterPage } from "../pages/register";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { AboutPage } from "../pages/about";
 
+// --- Importaciones de Admin actualizadas ---
 import { 
   AdminLayout, 
   AdminDashboard, 
@@ -27,6 +28,7 @@ import {
 
 export const AppRoutes = () => (
   <Routes>
+    {/* --- Rutas Públicas --- */}
     <Route path="/" element={<HomePage />} />
     <Route path="/login" element={<LoginPage />} /> 
     <Route path="/register" element={<RegisterPage />} />
@@ -44,6 +46,7 @@ export const AppRoutes = () => (
       <Route path="/checkout/error" element={<CheckoutError />} />
     
     
+   {/* --- RUTAS DE ADMIN --- */}
     <Route path="/admin" element={<ProtectedRoute role="ADMIN" />}>
       <Route element={<AdminLayout />}>
         <Route index element={<AdminDashboard />} /> 
@@ -60,6 +63,7 @@ export const AppRoutes = () => (
       </Route>
     </Route>
 
+    {/* --- Página no encontrada --- */}
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
