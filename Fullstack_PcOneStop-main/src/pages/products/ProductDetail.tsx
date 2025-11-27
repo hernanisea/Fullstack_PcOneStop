@@ -1,12 +1,11 @@
 import { Link, useParams } from "react-router-dom";
 import { useMemo, useState, useEffect } from "react";
-import { db } from "../../data/db";
-import { useApp } from "../../context/AppContext"; // 1. Importar useApp
+import { useApp } from "../../context/AppContext";
+import { getProductById } from "../../actions/get-product-by-id.actions";
 import { formatCurrency } from "../../helpers/format-currency.helpers";
 import type { Product } from "../../interfaces/product.interfaces";
-import type { Review } from "../../interfaces/review.interfaces"; // 2. Importar tipo actualizado
+import type { Review } from "../../interfaces/review.interfaces";
 import Rating from "../shared/Rating";
-// 3. Importar 'save' en lugar de 'add'
 import { getReviewsFromLS, saveReviewsToLS } from "../../helpers/local-storage.helpers"; 
 
 function uid() {
@@ -15,33 +14,36 @@ function uid() {
 
 export const ProductDetail = () => {
   const { id } = useParams();
-  // 4. Obtener 'user' y 'showToast' del contexto
-  const { addToCart, user, showToast } = useApp();
+  const { addToCart, user, showToast, products } = useApp();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const product = useMemo(
-    () => db.products.find((p) => p.id === id) as Product | undefined,
-    [id]
-  );
+  // Cargar producto desde el backend
+  useEffect(() => {
+    if (!id) return;
+    
+    const loadProduct = async () => {
+      setLoading(true);
+      const productData = await getProductById(id);
+      setProduct(productData);
+      setLoading(false);
+    };
+    
+    loadProduct();
+  }, [id]);
 
+  // Productos relacionados desde el contexto
   const related = useMemo(
-    () => db.products.filter((p) => p.category === product?.category && p.id !== product?.id),
-    [product]
+    () => products.filter((p) => p.category === product?.category && p.id !== product?.id).slice(0, 4),
+    [products, product]
   );
 
-  // ---------- Reseñas ----------
   const [reviews, setReviews] = useState<Review[]>([]);
-  // 5. Nuevo estado para guardar la reseña del usuario actual (si existe)
   const [userReview, setUserReview] = useState<Review | null>(null);
-  
-  // Estados del formulario
-  // const [author, setAuthor] = useState(""); // <-- ELIMINADO
   const [rating, setRating] = useState<1|2|3|4|5>(5);
   const [comment, setComment] = useState("");
-  
-  // 6. El nombre del autor se define por el login
-  const authorName = user ? user.name : "Anónimo";
 
-  // 7. Lógica de carga de reseñas actualizada
+  const authorName = user ? user.name : "Anónimo";
   useEffect(() => {
     if (!product) return;
     
@@ -49,27 +51,31 @@ export const ProductDetail = () => {
     const fromLS = getReviewsFromLS(product.id);
     setReviews(fromLS);
 
-    // Si el usuario está logueado, busca su reseña
     if (user) {
       const existingReview = fromLS.find(r => r.userId === user.id);
       if (existingReview) {
-        // Si la encuentra: guarda la reseña, y rellena el formulario
         setUserReview(existingReview);
         setRating(existingReview.rating);
         setComment(existingReview.comment);
       } else {
-        // Si no la encuentra: resetea el formulario
         setUserReview(null);
         setRating(5);
         setComment("");
       }
     } else {
-      // Si el usuario no está logueado, resetea todo
       setUserReview(null);
       setRating(5);
       setComment("");
     }
-  }, [product, user]); // Se ejecuta cuando cambia el producto o el usuario
+  }, [product, user]);
+
+  if (loading) {
+    return (
+      <div className="container py-5 text-center">
+        <p>Cargando producto...</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -91,7 +97,6 @@ export const ProductDetail = () => {
       image: product.image || "/logo.png"
     });
 
-  // 8. Lógica de envío de reseña (Añadir/Editar)
   const submitReview = (e: React.FormEvent) => {
     e.preventDefault();
     if (!comment.trim()) {
@@ -103,15 +108,12 @@ export const ProductDetail = () => {
     let nextReviews: Review[];
 
     if (userReview) {
-      // --- LÓGICA DE EDICIÓN ---
       nextReviews = reviews.map(r => 
         r.id === userReview.id 
-        ? { ...r, rating, comment, date: new Date().toISOString() } // La reseña actualizada
+        ? { ...r, rating, comment, date: new Date().toISOString() }
         : r
       );
-      
     } else {
-      // --- LÓGICA DE AÑADIR NUEVA ---
       const newReview: Review = {
         id: uid(),
         productId: product!.id,
@@ -124,33 +126,26 @@ export const ProductDetail = () => {
       nextReviews = [newReview, ...reviews];
     }
 
-    // 9. Guardamos la lista (nueva o actualizada) en LocalStorage
     saveReviewsToLS(product!.id, nextReviews);
-    setReviews(nextReviews); // Actualizamos el estado de la página
+    setReviews(nextReviews);
     
-    // 10. Actualizamos el estado 'userReview' y mostramos Toast
     if (userReview) {
-      // Si acabamos de EDITAR, actualizamos 'userReview' con los nuevos datos
       setUserReview(nextReviews.find(r => r.id === userReview.id) || null);
       showToast("Reseña actualizada con éxito", 'success');
     } else if (user) {
-      // Si acabamos de AÑADIR (y estamos logueados), buscamos la reseña recién creada y la guardamos
       setUserReview(nextReviews.find(r => r.userId === user.id) || null);
       showToast("Reseña publicada con éxito", 'success');
     } else {
-      // El usuario es anónimo, solo reseteamos el formulario
       setComment("");
       setRating(5);
       showToast("Reseña anónima publicada", 'success');
     }
   };
 
-  // 11. Texto del botón dinámico
   const buttonText = userReview ? "Actualizar Reseña" : "Publicar Reseña";
 
   return (
     <div className="product-detail container py-5">
-      {/* ----- SECCIÓN PRINCIPAL (sin cambios) ----- */}
       <div className="row g-4 align-items-center mb-5">
         <div className="col-md-6 text-center">
           <div className="product-image-wrapper shadow-sm rounded">
@@ -189,7 +184,6 @@ export const ProductDetail = () => {
         </div>
       </div>
 
-      {/* ----- RESEÑAS ----- */}
       <section className="reviews-section py-4 border-top border-dark-subtle">
         <h4 className="fw-semibold mb-3">Opiniones de clientes</h4>
 
@@ -249,7 +243,6 @@ export const ProductDetail = () => {
         </div>
       </section>
 
-      {/* ----- PRODUCTOS RELACIONADOS (sin cambios) ----- */}
       {related.length > 0 && (
         <section className="related-section py-5 border-top border-dark-subtle">
           <div className="d-flex justify-content-between align-items-center mb-3">

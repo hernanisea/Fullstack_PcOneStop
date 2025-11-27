@@ -2,7 +2,7 @@
 export type Review = {
   id: string;         // uuid
   productId: string;  // id del producto
-  userId: string | null; // <-- AÑADIDO: id del usuario, o null si es anónimo
+  userId: string | null;
   author: string;       // nombre visible (Anónimo o user.name)
   rating: 1 | 2 | 3 | 4 | 5;
   comment: string;

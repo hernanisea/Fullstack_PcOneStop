@@ -1,5 +1,4 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-// CORREGIDO: Sin extensión .tsx
 import { ProductCard } from '../pages/shared/ProductCard'; 
 import * as AppContext from '../context/AppContext'; 
 import { BrowserRouter } from 'react-router-dom';

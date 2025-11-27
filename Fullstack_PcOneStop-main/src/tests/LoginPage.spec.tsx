@@ -1,5 +1,4 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-// CORREGIDO: Sin extensiones
 import { LoginPage } from '../pages/login/LoginPage';
 import * as AuthActions from '../actions/auth.actions';
 import * as AppContext from '../context/AppContext';

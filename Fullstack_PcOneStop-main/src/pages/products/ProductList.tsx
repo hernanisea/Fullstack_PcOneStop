@@ -1,8 +1,6 @@
 import { useMemo, useState } from "react";
 import { ProductCard } from "../shared/ProductCard";
-import type { Product } from "../../interfaces/product.interfaces";
-// Si prefieres mock local:
-import { db } from "../../data/db";
+import { useApp } from "../../context/AppContext";
 
 const CATEGORIES = ["CPU", "GPU", "RAM", "Almacenamiento", "Placa madre", "Fuente", "Gabinete"];
 
@@ -10,8 +8,8 @@ export const ProductList = () => {
   const [q, setQ] = useState("");
   const [category, setCategory] = useState<string | "">("");
 
-  // Productos base desde mock
-  const products = (db?.products || []) as Product[];
+  // Productos desde el contexto (que vienen del backend)
+  const { products } = useApp();
 
   const filtered = useMemo(() => {
     return products.filter(p => {

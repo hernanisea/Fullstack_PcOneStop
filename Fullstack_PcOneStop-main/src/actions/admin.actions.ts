@@ -1,65 +1,109 @@
-import { db } from "../data/db.js";
+import { apiClient } from "../services/api.client";
+import { API_CONFIG } from "../config/api.config";
 import type { Order } from "../interfaces/order.interfaces";
 import type { Product } from "../interfaces/product.interfaces";
 import type { User } from "../interfaces/user.interfaces";
 
-// --- (Existente) ---
+// Obtener todos los productos (admin)
 export const getAdminProducts = async (): Promise<Product[]> => {
-  return Promise.resolve(db.products);
+  try {
+    const response = await apiClient.get<Product[]>(
+      `${API_CONFIG.PRODUCTS.baseURL}${API_CONFIG.PRODUCTS.endpoints.list}`
+    );
+    return response.data || [];
+  } catch (error) {
+    console.error("Error al obtener productos:", error);
+    return [];
+  }
 };
 
-// --- (Corregido) ---
-// La función estaba vacía. Esta es la implementación correcta.
+// Obtener todas las órdenes (admin)
 export const getAdminOrders = async (): Promise<Order[]> => {
-  // @ts-ignore
-  return Promise.resolve(db.orders);
+  try {
+    const response = await apiClient.get<Order[]>(
+      `${API_CONFIG.ORDERS.baseURL}${API_CONFIG.ORDERS.endpoints.list}`
+    );
+    return response.data || [];
+  } catch (error) {
+    console.error("Error al obtener órdenes:", error);
+    return [];
+  }
 };
 
-// --- (Corregido) ---
-// La función estaba vacía. Esta es la implementación correcta.
+// Obtener todos los usuarios (admin)
 export const getAdminUsers = async (): Promise<Omit<User, 'password'>[]> => {
-  const users = db.users.map(u => {
-    const { password, ...userWithoutPassword } = u;
-    return userWithoutPassword;
-  });
-  // @ts-ignore
-  return Promise.resolve(users);
+  try {
+    const response = await apiClient.get<User[]>(
+      `${API_CONFIG.USERS.baseURL}${API_CONFIG.USERS.endpoints.users}`
+    );
+    // El backend ya devuelve usuarios sin contraseña, pero por seguridad lo filtramos
+    return (response.data || []).map(({ password, ...user }) => user);
+  } catch (error) {
+    console.error("Error al obtener usuarios:", error);
+    return [];
+  }
 };
 
-// --- (Resto de las funciones que ya tenías) ---
+// Obtener producto por ID (admin)
 export const getAdminProductById = async (id: string): Promise<Product | null> => {
-  const product = db.products.find(p => p.id === id);
-  return Promise.resolve(product ?? null);
+  try {
+    const response = await apiClient.get<Product>(
+      `${API_CONFIG.PRODUCTS.baseURL}${API_CONFIG.PRODUCTS.endpoints.byId(id)}`
+    );
+    return response.data || null;
+  } catch (error) {
+    console.error("Error al obtener producto:", error);
+    return null;
+  }
 };
 
+// Crear nuevo producto (admin)
 export const createAdminProduct = async (productData: Omit<Product, 'id'>): Promise<Product> => {
-  await new Promise(r => setTimeout(r, 500)); // Simula latencia
-  const newProduct: Product = {
-    ...productData,
-    id: `prod-${Date.now().toString().slice(-6)}`,
-  };
-  db.products.push(newProduct); // Añade al mock DB
-  return newProduct;
+  try {
+    const response = await apiClient.post<Product>(
+      `${API_CONFIG.PRODUCTS.baseURL}${API_CONFIG.PRODUCTS.endpoints.create}`,
+      productData
+    );
+
+    if (!response.data) {
+      throw new Error(response.message || "Error al crear el producto");
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error("Error al crear producto:", error);
+    throw error;
+  }
 };
 
+// Actualizar producto existente (admin)
 export const updateAdminProduct = async (productId: string, productData: Product): Promise<Product> => {
-  await new Promise(r => setTimeout(r, 500)); // Simula latencia
-  const index = db.products.findIndex(p => p.id === productId);
-  if (index === -1) {
-    throw new Error("Producto no encontrado");
+  try {
+    const response = await apiClient.put<Product>(
+      `${API_CONFIG.PRODUCTS.baseURL}${API_CONFIG.PRODUCTS.endpoints.update(productId)}`,
+      productData
+    );
+
+    if (!response.data) {
+      throw new Error(response.message || "Error al actualizar el producto");
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error("Error al actualizar producto:", error);
+    throw error;
   }
-  db.products[index] = productData; // Actualiza el mock DB
-  return productData;
 };
 
+// Eliminar producto (admin)
 export const deleteAdminProduct = async (productId: string): Promise<{ success: boolean }> => {
-  await new Promise(r => setTimeout(r, 500)); // Simula latencia
-  const initialLength = db.products.length;
-  // Re-asigna db.products para "mutar" el mock DB
-  db.products = db.products.filter(p => p.id !== productId);
-  
-  if (db.products.length === initialLength) {
-    throw new Error("No se pudo eliminar el producto");
+  try {
+    await apiClient.delete<void>(
+      `${API_CONFIG.PRODUCTS.baseURL}${API_CONFIG.PRODUCTS.endpoints.delete(productId)}`
+    );
+    return { success: true };
+  } catch (error) {
+    console.error("Error al eliminar producto:", error);
+    throw error;
   }
-  return { success: true };
 };

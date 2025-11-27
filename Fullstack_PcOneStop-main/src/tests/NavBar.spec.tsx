@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-// CORREGIDO: Sin extensión
 import { NavBar } from '../pages/shared/NavBar';
 import * as AppContext from '../context/AppContext';
 import { BrowserRouter } from 'react-router-dom';

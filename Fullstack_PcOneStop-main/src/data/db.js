@@ -98,7 +98,7 @@ export const db = {
     {
       id: "user-admin-01",
       name: "Hernán",
-      lastName: "Admin", // <-- Nuevo campo
+      lastName: "Admin",
       email: "admin@pconestop.com",
       password: "admin",
       role: "ADMIN"
@@ -106,7 +106,7 @@ export const db = {
     {
       id: "user-client-01",
       name: "Pedro",
-      lastName: "Pérez", // <-- Nuevo campo
+      lastName: "Pérez",
       email: "cliente@gmail.com",
       password: "123",
       role: "CLIENT"

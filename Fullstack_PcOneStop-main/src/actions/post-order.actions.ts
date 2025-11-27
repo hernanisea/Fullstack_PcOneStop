@@ -1,12 +1,27 @@
+import { apiClient } from "../services/api.client";
+import { API_CONFIG } from "../config/api.config";
 import type { Order } from "../interfaces/order.interfaces";
 
 const KEY = "pcos_last_order";
 
 export async function postOrder(order: Order): Promise<Order> {
-  // Simula latencia de red
-  await new Promise(r => setTimeout(r, 500));
-  localStorage.setItem(KEY, JSON.stringify(order));
-  return order;
+  try {
+    const response = await apiClient.post<Order>(
+      `${API_CONFIG.ORDERS.baseURL}${API_CONFIG.ORDERS.endpoints.create}`,
+      order
+    );
+
+    if (response.data) {
+      // Guardamos también en localStorage como respaldo
+      localStorage.setItem(KEY, JSON.stringify(response.data));
+      return response.data;
+    }
+
+    throw new Error(response.message || "Error al crear el pedido");
+  } catch (error) {
+    console.error("Error al crear pedido:", error);
+    throw error;
+  }
 }
 
 export function getLastOrder(): Order | null {

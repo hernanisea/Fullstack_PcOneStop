@@ -1,5 +1,6 @@
 // src/actions/auth.actions.ts
-import { db } from "../data/db.js";
+import { apiClient } from "../services/api.client";
+import { API_CONFIG } from "../config/api.config";
 import type { User } from "../interfaces/user.interfaces";
 
 // Definimos un tipo para la respuesta
@@ -9,35 +10,31 @@ type LoginResult = {
 };
 
 /**
- * Simula un inicio de sesión buscando en la base de datos mock.
+ * Inicia sesión usando el microservicio de Usuarios
  */
 export const login = async (email: string, password: string): Promise<LoginResult> => {
-  // Simula latencia de red
-  await new Promise(r => setTimeout(r, 500));
-  
-  const user = db.users.find(
-    (u) => u.email.toLowerCase() === email.toLowerCase()
-  );
+  try {
+    const response = await apiClient.post<User>(
+      `${API_CONFIG.USERS.baseURL}${API_CONFIG.USERS.endpoints.login}`,
+      { email, password }
+    );
 
-  // --- LÓGICA DE ERROR MEJORADA ---
+    if (response.data) {
+      // El backend devuelve el usuario sin contraseña
+      return {
+        user: response.data,
+        error: null
+      };
+    }
 
-  // 1. Email no encontrado
-  // Aquí es donde generamos el mensaje que pides.
-  if (!user) {
-    return { user: null, error: "El email ingresado no existe." };
+    return {
+      user: null,
+      error: response.message || "Error al iniciar sesión"
+    };
+  } catch (error) {
+    return {
+      user: null,
+      error: error instanceof Error ? error.message : "Error desconocido al iniciar sesión"
+    };
   }
-
-  // 2. Contraseña incorrecta
-  if (user.password !== password) {
-    return { user: null, error: "Contraseña incorrecta." };
-  }
-  
-  // 3. Éxito
-  // Devolvemos el usuario sin la contraseña por seguridad
-  const { password: _, ...userWithoutPassword } = user;
-  
-  return {
-    user: userWithoutPassword as User,
-    error: null
-  };
 };

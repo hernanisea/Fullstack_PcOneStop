@@ -1,5 +1,6 @@
 // src/actions/register.actions.ts
-import { db } from "../data/db.js";
+import { apiClient } from "../services/api.client";
+import { API_CONFIG } from "../config/api.config";
 import type { User } from "../interfaces/user.interfaces";
 
 type RegisterResult = {
@@ -8,35 +9,36 @@ type RegisterResult = {
 };
 
 export const register = async (name: string, email: string, password: string): Promise<RegisterResult> => {
-  // Simula latencia de red
-  await new Promise(r => setTimeout(r, 700));
+  try {
+    // El backend espera un objeto User completo
+    const userData = {
+      name,
+      email,
+      password,
+      role: "CLIENT" as const
+    };
 
-  const existingUser = db.users.find(
-    (u) => u.email.toLowerCase() === email.toLowerCase()
-  );
+    const response = await apiClient.post<User>(
+      `${API_CONFIG.USERS.baseURL}${API_CONFIG.USERS.endpoints.register}`,
+      userData
+    );
 
-  // 1. Email ya existe
-  if (existingUser) {
-    return { user: null, error: "Este email ya está registrado." };
+    if (response.data) {
+      // El backend devuelve el usuario sin contraseña
+      return {
+        user: response.data,
+        error: null
+      };
+    }
+
+    return {
+      user: null,
+      error: response.message || "Error al registrar usuario"
+    };
+  } catch (error) {
+    return {
+      user: null,
+      error: error instanceof Error ? error.message : "Error desconocido al registrar usuario"
+    };
   }
-
-  // 2. Crear nuevo usuario (Cliente por defecto)
-  const newUser = {
-    id: `user-client-${Date.now().toString().slice(-4)}`,
-    name: name,
-    email: email,
-    password: password, // En un proyecto real, hashear la contraseña
-    role: "CLIENT" as const, // Forzamos el tipo a "CLIENT"
-  };
-
-  // 3. Guardar en la BD mock
-  db.users.push(newUser);
-
-  // 4. Devolver el usuario (sin contraseña)
-  const { password: _, ...userWithoutPassword } = newUser;
-  
-  return {
-    user: userWithoutPassword as User,
-    error: null
-  };
 };

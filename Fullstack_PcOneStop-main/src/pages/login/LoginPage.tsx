@@ -10,7 +10,6 @@ type ValidationErrors = {
 };
 
 export const LoginPage = () => {
-  // --- 1. Obtenemos showToast ---
   const { setUser, setIsLoading, showToast } = useApp();
   const navigate = useNavigate();
 
@@ -18,7 +17,6 @@ export const LoginPage = () => {
   const [password, setPassword] = useState("");
   
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
-  // const [serverError, setServerError] = useState(""); // <-- YA NO SE USA
   const [loading, setLoading] = useState(false);
 
   // Funciones onChange que limpian los errores de validación
@@ -59,7 +57,6 @@ export const LoginPage = () => {
 
       if (result.user) {
         setUser(result.user);
-        // Opcional: Damos la bienvenida
         showToast(`Bienvenido, ${result.user.name}!`, 'success'); 
         if (result.user.role === "ADMIN") {
           navigate("/admin/dashboard");
@@ -67,17 +64,15 @@ export const LoginPage = () => {
           navigate("/");
         }
       } else if (result.error) {
-        // --- 2. AQUÍ ESTÁ LA SOLUCIÓN ---
-        // Usamos el Toast global de error
         showToast(result.error, 'error'); 
       }
       
     } catch (err) {
       console.error(err);
-      showToast("Ocurrió un error inesperado.", 'error'); // Error genérico
+      showToast("Ocurrió un error inesperado.", 'error');
     } finally {
       setLoading(false);
-      setIsLoading(false); // Apaga el loader global
+      setIsLoading(false);
     }
   };
 
@@ -87,9 +82,6 @@ export const LoginPage = () => {
         <div className="card-body p-4 p-md-5">
           <h2 className="text-center mb-4">Iniciar Sesión</h2>
           <form onSubmit={handleSubmit} noValidate>
-            
-            {/* --- 3. ELIMINAMOS EL ALERT ROJO DE AQUÍ --- */}
-            
             <div className="mb-3">
               <label className="form-label">Email</label>
               <input

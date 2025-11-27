@@ -7,7 +7,7 @@ import "./styles/global.css";
 import "./styles/theme.css";
 
 function AppContent() {
-  const { isLoading } = useApp(); // <-- MODIFICADO (ya no necesita toastMessage)
+  const { isLoading } = useApp();
 
   if (isLoading) {
     return <LoadingScreen />;
@@ -18,7 +18,6 @@ function AppContent() {
       <NavBar />
       <AppRoutes />
       <Footer />
-      {/* MODIFICADO: ToastAlert ahora se renderiza solo */}
       <ToastAlert /> 
     </>
   );
