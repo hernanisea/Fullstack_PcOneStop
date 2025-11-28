@@ -15,10 +15,6 @@ export const login = async (email: string, password: string): Promise<LoginResul
 
     const data = await response.json();
 
-    if (!response.ok) {
-      return { user: null, error: data.message || `Error ${response.status}: Error al iniciar sesión` };
-    }
-
     if (data.success && data.data) {
       return { user: data.data, error: null };
     }

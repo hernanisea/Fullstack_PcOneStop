@@ -24,7 +24,6 @@ const emptyProduct: Product = {
 export const AdminProductForm = ({ initialData, onSubmit, isSubmitting }: Props) => {
   const [formData, setFormData] = useState<Product>(initialData || emptyProduct);
 
-  // Sincroniza el form si 'initialData' cambia (ej. al cargar datos de edición)
   useEffect(() => {
     if (initialData) {
       setFormData(initialData);
@@ -56,23 +55,14 @@ export const AdminProductForm = ({ initialData, onSubmit, isSubmitting }: Props)
   
   const handleOfferChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const discount = Number(e.target.value);
-    setFormData(prev => {
-      // Si el descuento es 0 o negativo, eliminar la oferta
-      if (discount <= 0) {
-        const { offer, ...rest } = prev;
-        return { ...rest, isOnSale: false };
+    setFormData(prev => ({
+      ...prev,
+      offer: {
+        discount: discount,
+        startDate: "", // Mock
+        endDate: "" // Mock
       }
-      // Si hay descuento, crear/actualizar la oferta
-      return {
-        ...prev,
-        isOnSale: true,
-        offer: {
-          discount: discount,
-          startDate: new Date().toISOString().split('T')[0], // Fecha actual como inicio
-          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 30 días después
-        }
-      };
-    });
+    }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {

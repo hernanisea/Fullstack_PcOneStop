@@ -29,11 +29,8 @@ export function saveReviewsToLS(productId: string, reviews: Review[]) {
   localStorage.setItem(REVIEWS_KEY, JSON.stringify(all));
 }
 
-// 4. Actualizar el tipo del parámetro
 export function addReviewToLS(review: Review) {
   const current = getReviewsFromLS(review.productId);
-  // NOTA: Esta función 'addReviewToLS' la dejaremos de usar en el componente
-  // para implementar la lógica de "editar", pero la actualizamos por si la usas en otro lado.
   const next = [review, ...current];
   saveReviewsToLS(review.productId, next);
   return next;

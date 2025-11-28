@@ -41,17 +41,8 @@ export const AdminProductEdit = () => {
         setIsSubmitting(true);
         setIsLoading(true);
 
-        // Limpiar campos opcionales que no deben enviarse si están vacíos
-        const cleanProductData: any = { ...formData };
-        
-        // Si no está en oferta, eliminar el campo offer
-        if (!cleanProductData.isOnSale || !cleanProductData.offer || cleanProductData.offer.discount <= 0) {
-          delete cleanProductData.offer;
-          cleanProductData.isOnSale = false;
-        }
-
         try {
-            await updateAdminProduct(id, cleanProductData);
+            await updateAdminProduct(id, formData);
             showToast("Producto actualizado exitosamente", "success");
             navigate("/admin/products");
         } catch (err) {

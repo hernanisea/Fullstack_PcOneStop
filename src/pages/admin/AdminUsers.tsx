@@ -10,11 +10,9 @@ export const AdminUsers = () => {
   useEffect(() => {
     getAdminUsers()
       .then(setUsers)
-      // --- ESTE ES EL ARREGLO ---
-      // Añadimos un .catch() para manejar cualquier error
       .catch((err) => {
         console.error("Error al cargar usuarios:", err);
-        setError("No se pudieron cargar los usuarios. Revisa que 'db.js' tenga el array 'users'.");
+        setError("No se pudieron cargar los usuarios.");
       })
       .finally(() => {
         setLoading(false);

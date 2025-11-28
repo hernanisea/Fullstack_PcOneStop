@@ -42,15 +42,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // Carga los productos y desactiva el 'isLoading'
   useEffect(() => {
     const loadData = async () => {
-      setIsLoading(true); // Asegura que esté en true
-      const productsFromDb = await getProducts();
-      setProducts(productsFromDb);
-      // Simula un tiempo de carga mínimo
-      await new Promise(r => setTimeout(r, 500));
-      setIsLoading(false); // <-- ¡La línea clave! Termina la carga
+      setIsLoading(true);
+      try {
+        const productsFromDb = await getProducts();
+        setProducts(productsFromDb);
+      } catch (error) {
+        console.error("Error al cargar productos:", error);
+      } finally {
+        // Simula un tiempo de carga mínimo
+        await new Promise(r => setTimeout(r, 500));
+        setIsLoading(false);
+      }
     };
     loadData();
-  }, []); // Array vacío, se ejecuta solo una vez
+  }, []);
 
   // --- Funciones del Toast (ya estaban correctas) ---
   const showToast = (msg: string, type: ToastType = 'success') => {

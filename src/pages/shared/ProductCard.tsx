@@ -30,6 +30,12 @@ export const ProductCard = ({ product }: Props) => {
           src={product.image || "/logo.png"}
           alt={product.name}
           loading="lazy"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            if (target.src !== `${window.location.origin}/logo.png`) {
+              target.src = "/logo.png";
+            }
+          }}
         />
         <span
           className={`product-badge badge ${

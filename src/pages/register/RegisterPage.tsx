@@ -6,7 +6,6 @@ import { register } from "../../actions/register.actions";
 
 type ValidationErrors = {
   name?: string;
-  lastName?: string;
   email?: string;
   password?: string;
   confirmPassword?: string;
@@ -18,7 +17,6 @@ export const RegisterPage = () => {
 
   // Estados del formulario
   const [name, setName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -34,9 +32,6 @@ export const RegisterPage = () => {
 
     if (!name.trim()) {
       errors.name = "El nombre es obligatorio.";
-    }
-    if (!lastName.trim()) {
-      errors.lastName = "El apellido es obligatorio.";
     }
     if (!email.trim()) {
       errors.email = "El email es obligatorio.";
@@ -70,7 +65,7 @@ export const RegisterPage = () => {
     setIsLoading(true);
 
     try {
-      const result = await register(name, lastName, email, password);
+      const result = await register(name, email, password);
 
       if (result.user) {
         setUser(result.user); // Autoiniciar sesión al registrarse
@@ -110,20 +105,6 @@ export const RegisterPage = () => {
               />
               {validationErrors.name && (
                 <div className="invalid-feedback">{validationErrors.name}</div>
-              )}
-            </div>
-
-            <div className="mb-3">
-              <label className="form-label">Apellido</label>
-              <input
-                type="text"
-                className={`form-control ${validationErrors.lastName ? 'is-invalid' : ''}`}
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                disabled={loading}
-              />
-              {validationErrors.lastName && (
-                <div className="invalid-feedback">{validationErrors.lastName}</div>
               )}
             </div>
 

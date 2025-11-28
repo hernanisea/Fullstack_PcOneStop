@@ -24,7 +24,6 @@ export const AdminProducts = () => {
     loadProducts();
   }, []);
 
-  // Función para eliminar
   const handleDelete = async (productId: string, productName: string) => {
     if (!window.confirm(`¿Estás seguro de que quieres eliminar "${productName}"?`)) {
       return;
@@ -74,7 +73,19 @@ export const AdminProducts = () => {
                   {products.map(product => (
                     <tr key={product.id}>
                       <td>
-                        <img src={product.image} alt={product.name} width="50" height="50" style={{ objectFit: 'contain' }} />
+                        <img 
+                          src={product.image || "/logo.png"} 
+                          alt={product.name} 
+                          width="50" 
+                          height="50" 
+                          style={{ objectFit: 'contain' }}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            if (target.src !== `${window.location.origin}/logo.png`) {
+                              target.src = "/logo.png";
+                            }
+                          }}
+                        />
                       </td>
                       <td>{product.name}</td>
                       <td>{product.category}</td>

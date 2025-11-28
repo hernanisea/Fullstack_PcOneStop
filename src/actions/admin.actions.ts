@@ -48,15 +48,10 @@ export const getAdminProductById = async (id: string): Promise<Product | null> =
 
 export const createAdminProduct = async (productData: Omit<Product, 'id'>): Promise<Product> => {
   try {
-    // Limpiar el objeto para no enviar campos undefined
-    const cleanData = Object.fromEntries(
-      Object.entries(productData).filter(([_, value]) => value !== undefined)
-    );
-    
     const response = await fetch('http://localhost:8082/api/v1/products', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(cleanData)
+      body: JSON.stringify(productData)
     });
 
     const data = await response.json();
@@ -74,15 +69,10 @@ export const createAdminProduct = async (productData: Omit<Product, 'id'>): Prom
 
 export const updateAdminProduct = async (productId: string, productData: Product): Promise<Product> => {
   try {
-    // Limpiar el objeto para no enviar campos undefined
-    const cleanData = Object.fromEntries(
-      Object.entries(productData).filter(([_, value]) => value !== undefined)
-    );
-    
     const response = await fetch(`http://localhost:8082/api/v1/products/${productId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(cleanData)
+      body: JSON.stringify(productData)
     });
 
     const data = await response.json();

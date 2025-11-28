@@ -17,18 +17,9 @@ export const AdminProductNew = () => {
 
         // Quitamos 'id' porque la acción lo genera
         const { id, ...productData } = formData;
-        
-        // Limpiar campos opcionales que no deben enviarse si están vacíos
-        const cleanProductData: any = { ...productData };
-        
-        // Si no está en oferta, eliminar el campo offer
-        if (!cleanProductData.isOnSale || !cleanProductData.offer || cleanProductData.offer.discount <= 0) {
-          delete cleanProductData.offer;
-          cleanProductData.isOnSale = false;
-        }
 
         try {
-            await createAdminProduct(cleanProductData);
+            await createAdminProduct(productData);
             showToast("Producto creado exitosamente", "success");
             navigate("/admin/products");
         } catch (err) {

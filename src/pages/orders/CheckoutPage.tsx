@@ -25,9 +25,13 @@ export const CheckoutPage = () => {
   // --- 3. NUEVO: Lógica para rellenar el formulario si el usuario existe ---
   useEffect(() => {
     if (user) {
-      // Usamos directamente user.name y user.lastName si están disponibles
-      setName(user.name || "");
-      setLastName(user.lastName || "");
+      // Asumimos que user.name es "Nombre Apellido"
+      const nameParts = user.name.split(' ');
+      const firstName = nameParts[0] || "";
+      const restOfName = nameParts.slice(1).join(' ');
+
+      setName(firstName);
+      setLastName(restOfName);
       setEmail(user.email);
     }
   }, [user]); // Se ejecuta cada vez que el 'user' (del login) cambie
@@ -50,9 +54,8 @@ export const CheckoutPage = () => {
 
     try {
       setLoading(true);
-      // Construir el objeto de orden sin campos undefined
-      // No incluimos 'id' porque el backend lo genera automáticamente
-      const orderData: any = {
+      const order: Order = {
+        id: `NRO-${Date.now().toString().slice(-6)}`, 
         items: cart.map(i => ({ productId: i.productId, name: i.name, price: i.price, qty: i.qty })),
         total,
         createdAt: new Date().toISOString(),
@@ -60,23 +63,17 @@ export const CheckoutPage = () => {
         customerLastName: lastName,
         customerEmail: email,
         shippingStreet: street,
+        shippingDepartment: department || undefined,
         shippingRegion: region,
         shippingComuna: comuna,
+        shippingIndications: indications || undefined,
       };
       
-      // Solo agregar campos opcionales si tienen valor
-      if (department && department.trim()) {
-        orderData.shippingDepartment = department;
-      }
-      if (indications && indications.trim()) {
-        orderData.shippingIndications = indications;
-      }
-      
-      const order: Order = orderData as Order;
       await postOrder(order);
       clearCart();
       navigate("/checkout/success");
-    } catch {
+    } catch (error) {
+      console.error("Error al procesar orden:", error);
       setFormError("No se pudo procesar la orden. Intenta de nuevo.");
       navigate("/checkout/error"); 
     } finally {

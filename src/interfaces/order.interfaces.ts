@@ -18,10 +18,8 @@ export type OrderItem = {
   qty: number;
 };
 
-// --- MODIFICADO ---
-// Añadimos todos los campos del formulario de checkout
 export type Order = {
-  id?: string; // Opcional porque el backend lo genera al crear
+  id: string;
   items: OrderItem[];
   total: number;
   createdAt: string; // ISO

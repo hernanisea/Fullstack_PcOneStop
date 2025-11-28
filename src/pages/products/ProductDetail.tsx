@@ -30,46 +30,38 @@ export const ProductDetail = () => {
 
   // ---------- Reseñas ----------
   const [reviews, setReviews] = useState<Review[]>([]);
-  // 5. Nuevo estado para guardar la reseña del usuario actual (si existe)
   const [userReview, setUserReview] = useState<Review | null>(null);
   
-  // Estados del formulario
-  // const [author, setAuthor] = useState(""); // <-- ELIMINADO
   const [rating, setRating] = useState<1|2|3|4|5>(5);
   const [comment, setComment] = useState("");
   
-  // 6. El nombre del autor se define por el login
   const authorName = user ? user.name : "Anónimo";
 
-  // 7. Lógica de carga de reseñas actualizada
+  // Cargar reseñas desde localStorage
   useEffect(() => {
     if (!product) return;
     
-    // Carga todas las reseñas
     const fromLS = getReviewsFromLS(product.id);
     setReviews(fromLS);
 
-    // Si el usuario está logueado, busca su reseña
+    // Si el usuario está logueado, buscar su reseña
     if (user) {
       const existingReview = fromLS.find(r => r.userId === user.id);
       if (existingReview) {
-        // Si la encuentra: guarda la reseña, y rellena el formulario
         setUserReview(existingReview);
         setRating(existingReview.rating);
         setComment(existingReview.comment);
       } else {
-        // Si no la encuentra: resetea el formulario
         setUserReview(null);
         setRating(5);
         setComment("");
       }
     } else {
-      // Si el usuario no está logueado, resetea todo
       setUserReview(null);
       setRating(5);
       setComment("");
     }
-  }, [product, user]); // Se ejecuta cuando cambia el producto o el usuario
+  }, [product, user]);
 
   if (!product) {
     return (
@@ -91,7 +83,7 @@ export const ProductDetail = () => {
       image: product.image || "/logo.png"
     });
 
-  // 8. Lógica de envío de reseña (Añadir/Editar)
+  // Guardar o actualizar reseña
   const submitReview = (e: React.FormEvent) => {
     e.preventDefault();
     if (!comment.trim()) {
@@ -103,15 +95,14 @@ export const ProductDetail = () => {
     let nextReviews: Review[];
 
     if (userReview) {
-      // --- LÓGICA DE EDICIÓN ---
+      // Actualizar reseña existente
       nextReviews = reviews.map(r => 
         r.id === userReview.id 
-        ? { ...r, rating, comment, date: new Date().toISOString() } // La reseña actualizada
+        ? { ...r, rating, comment, date: new Date().toISOString() }
         : r
       );
-      
     } else {
-      // --- LÓGICA DE AÑADIR NUEVA ---
+      // Crear nueva reseña
       const newReview: Review = {
         id: uid(),
         productId: product!.id,
@@ -124,28 +115,22 @@ export const ProductDetail = () => {
       nextReviews = [newReview, ...reviews];
     }
 
-    // 9. Guardamos la lista (nueva o actualizada) en LocalStorage
     saveReviewsToLS(product!.id, nextReviews);
-    setReviews(nextReviews); // Actualizamos el estado de la página
+    setReviews(nextReviews);
     
-    // 10. Actualizamos el estado 'userReview' y mostramos Toast
     if (userReview) {
-      // Si acabamos de EDITAR, actualizamos 'userReview' con los nuevos datos
       setUserReview(nextReviews.find(r => r.id === userReview.id) || null);
       showToast("Reseña actualizada con éxito", 'success');
     } else if (user) {
-      // Si acabamos de AÑADIR (y estamos logueados), buscamos la reseña recién creada y la guardamos
       setUserReview(nextReviews.find(r => r.userId === user.id) || null);
       showToast("Reseña publicada con éxito", 'success');
     } else {
-      // El usuario es anónimo, solo reseteamos el formulario
       setComment("");
       setRating(5);
       showToast("Reseña anónima publicada", 'success');
     }
   };
 
-  // 11. Texto del botón dinámico
   const buttonText = userReview ? "Actualizar Reseña" : "Publicar Reseña";
 
   return (
@@ -159,6 +144,12 @@ export const ProductDetail = () => {
               alt={product.name}
               className="img-fluid"
               loading="lazy"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                if (target.src !== `${window.location.origin}/logo.png`) {
+                  target.src = "/logo.png";
+                }
+              }}
             />
           </div>
         </div>
@@ -267,6 +258,12 @@ export const ProductDetail = () => {
                     alt={p.name}
                     className="card-img-top p-3"
                     style={{ objectFit: "contain", height: 150 }}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      if (target.src !== `${window.location.origin}/logo.png`) {
+                        target.src = "/logo.png";
+                      }
+                    }}
                   />
                   <div className="card-body">
                     <h6 className="card-title">{p.name}</h6>

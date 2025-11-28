@@ -30,6 +30,12 @@ export const CartDrawer = () => {
                     width={48}
                     height={48}
                     className="rounded border bg-white object-fit-contain"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      if (target.src !== `${window.location.origin}/logo.png`) {
+                        target.src = "/logo.png";
+                      }
+                    }}
                   />
                   <div className="flex-grow-1">
                     <div className="fw-semibold">{item.name}</div>

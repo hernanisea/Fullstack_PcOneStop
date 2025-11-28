@@ -1,8 +1,7 @@
 // src/pages/shared/ToastAlert.tsx
 import { useEffect, useRef } from "react";
-import { useApp } from "../../context/AppContext"; // Importamos useApp
+import { useApp } from "../../context/AppContext";
 
-// Este componente ya no recibe props, tomará todo desde el contexto
 export const ToastAlert = () => {
   const { toast, hideToast } = useApp();
   const ref = useRef<HTMLDivElement>(null);

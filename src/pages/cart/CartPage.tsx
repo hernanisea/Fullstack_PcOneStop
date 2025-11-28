@@ -38,7 +38,19 @@ export const CartPage = () => {
                     <tr key={item.productId}>
                       <td>
                         <div className="d-flex align-items-center gap-3">
-                          <img src={item.image ?? "/logo.png"} alt={item.name} width={54} height={54} className="rounded border bg-white object-fit-contain" />
+                          <img 
+                            src={item.image ?? "/logo.png"} 
+                            alt={item.name} 
+                            width={54} 
+                            height={54} 
+                            className="rounded border bg-white object-fit-contain"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              if (target.src !== `${window.location.origin}/logo.png`) {
+                                target.src = "/logo.png";
+                              }
+                            }}
+                          />
                           <div>
                             <div className="fw-semibold">{item.name}</div>
                             <div className="small text-muted">{item.productId}</div>

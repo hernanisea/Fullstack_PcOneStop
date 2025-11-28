@@ -59,9 +59,8 @@ export const PcBuilderPage = () => {
       return; // Detiene la función
     }
     
-    // 2. Si todo está completo, procede a la validación de compatibilidad
-    setShowRequiredError(false); // Oculta el error de campos obligatorios
-    const result = validateCompatibility(build); // Tu helper de validación
+    setShowRequiredError(false);
+    const result = validateCompatibility(build);
     setValidation(result);
     setValidated(true);
   };
